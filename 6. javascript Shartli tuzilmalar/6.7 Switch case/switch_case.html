@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="uz">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Valyuta Konverteri</title>
+		<link rel="stylesheet" href="switch_case.css" />
+		<script src="switch_case.js" defer></script>
+	</head>
+	<body>
+
+
+		<input type="text" id="input" placeholder="miqdorni kiriting">
+
+		<select id="valyutalar" onchange="hisobla()">
+			<option >Valyuta tanlang!</option>
+			<option value="USD">dollar</option>
+			<option value="EUR">yevro</option>
+			<option value="RUB">rubl</option>
+		</select>
+
+		<div id="natija"></div>
+
+
+
+	</body>
+</html>

@@ -1,0 +1,60 @@
+body {
+  font-family: Arial, sans-serif;
+  background-color: #e17f7f;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.umumiy_forma {
+  width: 300px;
+  display: grid;
+  justify-items: center;
+  grid-template-columns: repeat(1, 1fr);
+  grid-template-rows: auto;
+  border-radius: 10px;
+  background-color: antiquewhite;
+  overflow: hidden;
+}
+
+.hisoblash_formasi {
+
+  width: 70%;
+  margin: 10px;
+  background-color: #fff;
+  padding: 10px;
+  border: 1px solid #ccc;
+
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+  gap: 10px;
+  grid-template-rows: auto;
+
+}
+
+.hisob_kitob {
+  margin: 0 50px;
+
+
+}
+
+.input {
+
+  line-height: 30px;
+
+}
+
+.btn {
+
+  padding: 10px;
+  background-color: #f05656;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+
+}

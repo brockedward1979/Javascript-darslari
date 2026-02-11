@@ -1,0 +1,55 @@
+.product-card {
+	border: 1px solid #eee;
+	padding: 20px;
+	width: 280px;
+	border-radius: 15px;
+	text-align: center;
+	box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+}
+
+.badge {
+	background: #4caf50;
+	color: white;
+	font-size: 12px;
+	padding: 3px 8px;
+	border-radius: 5px;
+	display: inline-block;
+}
+
+.counter {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	gap: 10px;
+	margin: 15px 0;
+}
+
+.counter input {
+	width: 40px;
+	text-align: center;
+	border: 1px solid #ddd;
+	font-weight: bold;
+}
+
+.counter button {
+	width: 30px;
+	height: 30px;
+	cursor: pointer;
+}
+
+.summary {
+	border-top: 1px solid #eee;
+	margin-top: 15px;
+	font-size: 18px;
+}
+
+#orderBtn {
+	width: 100%;
+	background: #ff9800;
+	color: white;
+	border: none;
+	padding: 10px;
+	border-radius: 5px;
+	cursor: pointer;
+	margin-top: 10px;
+}

@@ -1,0 +1,109 @@
+h2{
+  text-align: center;
+  
+}
+
+
+*{
+  box-sizing: border-box;
+}
+
+.ota{
+  display: flex;
+  flex-direction: column;
+
+  
+  gap: 10px;
+
+  border: 1px solid #000;
+  padding: 20px;
+  border-radius: 10px;
+
+  background-color: aquamarine;
+
+  width: fit-content;
+  margin: 10px auto;
+  
+}
+
+.input{
+  width: 20px;
+  height: 20px;
+  accent-color: orange;
+  cursor: pointer;
+}
+
+.tanlovlar{
+  display: flex;
+  gap: 10px;
+  align-items: center;
+ 
+  
+}
+
+#qogoz{
+  font-size: 20px;
+  padding: 3px;
+  cursor: pointer;
+}
+
+.pasti{
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+  
+  
+}
+
+.btn{
+  padding: 10px 30px;
+  
+  border: 1px solid #000;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+
+  transition: background-color 1s, color 0.1s;
+  
+}
+
+.btn:active{
+  background-color: rgb(154, 218, 221);
+  color: #fff;
+}
+
+.natija{
+  border-bottom: 1px dashed #000;
+  padding: 10px;
+  font-weight: 700;
+}
+
+.span_natija{
+  color: rgb(249, 97, 3);
+  font-style: italic;
+  font-weight: 700;
+  font-size: 18px;
+  margin-left: 5px;
+
+  
+}
+
+.rasm{
+  width: 80%;
+  margin: 20px 0 0 auto;
+}
+
+.ota_natijalar{
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  
+ 
+  gap: 20px;
+}
+
+.input_alohida{
+  width: 20px;
+  height: 20px;
+  accent-color: orange;
+  cursor: pointer;
+}

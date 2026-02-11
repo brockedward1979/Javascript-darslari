@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Document</title>
+		<link rel="stylesheet" href="proyekt.css" />
+		<script src="proyekt.js" defer></script>
+	</head>
+	<body>
+		<div class="ota">
+			<h3>Kitob nashr etish uchun buyurtma dasturi</h3>
+
+			<div class="tanlovlar">
+				<input type="checkbox" class="tanlov" id="muqovalimi" />
+				<label for="muqovalimi">qattiq muqovalimi?</label>
+			</div>
+			<div class="tanlovlar">
+				<input type="checkbox" class="tanlov" id="ranglimi" />
+				<label for="ranglimi">ranglimi?</label>
+			</div>
+			<div class="tanlovlar">
+				<input type="checkbox" class="tanlov" id="elektronKitobBormi" />
+				<label for="elektronKitobBormi">elektron kitobi bilanmi?</label>
+			</div>
+
+			<button class="btn" onclick="buyurtmaniHisoblash()">
+				Buyurtmani hisoblash
+			</button>
+
+			<div class="natijalar">
+				<p class="malumot" id="muqova_turi"></p>
+
+				<p class="malumot" id="ranggi"></p>
+
+				<p class="malumot" id="e_kitoblimi"></p>
+
+				<p class="malumot" id="jami_summa"></p>
+			</div>
+		</div>
+	</body>
+</html>

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Document</title>
+		<link rel="stylesheet" href="proyekt_nullish_coalescing_takror.css" />
+		<script src="proyekt_nullish_coalescing_takror.js" defer></script>
+	</head>
+	<body>
+		<div class="ota">
+			<h2>Kitob nashr etish uchun buyurtma dasturi</h2>
+
+			<div class="tanlovlar">
+				<input type="checkbox" class="input" id="muqovaQattiqmi" />
+				<label for="muqovaQattiqmi">muqovasi qattiqmi?</label>
+			</div>
+
+			<div class="tanlovlar">
+				<input type="checkbox" class="input" id="ranglimi" />
+				<label for="ranglimi">ranglimi?</label>
+			</div>
+
+			<div class="tanlovlar">
+				<input type="checkbox" class="input" id="eKitobBormi" />
+				<label for="eKitobBormi">elektron kitobi bilanmi?</label>
+			</div>
+
+			<label class="alohida">				
+				<input type="checkbox" class="input_alohida" id="alohida" >
+				Bugungi kunda qog'oz turi:
+			</label>
+
+			<div class="pasti">
+				<select id="qogoz">
+					<option value="">standart (ofis qog'ozi)</option>
+					<option value="">oddiy (gazeta qog'ozi)</option>
+					<option value="">premium (dizayn qog'ozi)</option>
+				</select>
+
+				<button class="btn" onclick="buyurtmani_rasmiylashtir()">
+					Buyurtmani hisoblash
+				</button>
+			</div>
+
+			<div class="ota_natijalar">
+				<div class="natijalar">
+					<div class="natija">
+						Muqova turi: <span id="muqovaTuri" class="span_natija"></span>
+					</div>
+					<div class="natija">
+						Ranggi: <span id="ranggi" class="span_natija"></span>
+					</div>
+					<div class="natija">
+						Paket turi: <span id="paketTuri" class="span_natija"></span>
+					</div>
+					<div class="natija">
+						Qog'oz turi: <span id="qogozTuri" class="span_natija"></span>
+					</div>
+					<div class="natija">
+						Narxi: <span id="narxi" class="span_natija"></span>
+					</div>
+				</div>
+
+				<img src="rasmlar/game development book.jpg" id="rasm" alt="" class="rasm" />
+			</div>
+		</div>
+	</body>
+</html>

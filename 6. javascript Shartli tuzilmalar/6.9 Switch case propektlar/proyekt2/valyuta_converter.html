@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Document</title>
+		<link rel="stylesheet" href="valyuta_converter.css" />
+		<script src="valyuta_converter.js" defer></script>
+	</head>
+	<body>
+		<div class="ota">
+			<input type="text" id="miqdor" placeholder="miqdorni kiriting" />
+
+			<select id="valyutalar">
+				<option value="USD">USD</option>
+				<option value="EUR">EUR</option>
+				<option value="RUB">RUB</option>
+			</select>
+
+			<button class="btn" onclick="hisobla()">hisobla</button>
+
+
+
+			<div id="natija_box">
+				<div id="asosiy_valyuta"></div>
+				<div id="natija"></div>
+			</div>
+		</div>
+	</body>
+</html>

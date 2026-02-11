@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="uz">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Kitob Nashr Qilish - Buyurtma tizimi</title>
+		<link rel="stylesheet" href="proyekt_nullish_coalescing.css" />
+	</head>
+	<body>
+		<div class="card">
+			<h2>📚 Kitob Nashr Etish</h2>
+			<p class="subtitle">Xizmatlarni tanlang:</p>
+
+			<div class="selection-group">
+				<div class="item">
+					<input type="checkbox" id="hardcover" class="checkbox" data-price="15000" />
+					<label for="hardcover">Qattiq muqova (+15,000)</label>
+				</div>
+				<div class="item">
+					<input type="checkbox" id="colorImages" class="checkbox" data-price="20000" />
+					<label for="colorImages">Rangli rasmlar (+20,000)</label>
+				</div>
+				<div class="item">
+					<input type="checkbox" id="ebook" class="checkbox" data-price="10000" />
+					<label for="ebook">Elektron versiya (PDF) (+10,000)</label>
+				</div>
+			</div>
+
+			<div class="options">
+				<label for="paperSelect">Qog'oz turi:</label>
+				<select id="paperSelect">
+					<option value="">-- Standart --</option>
+					<option value="Premium">Premium Oq (+5,000)</option>
+					<option value="Eco">Ekologik Sariq (+3,000)</option>
+				</select>
+			</div>
+
+			<button class="btn" onclick="processOrder()">Buyurtmani hisoblash</button>
+
+			<div id="receipt" class="receipt hidden">
+				<h4>📄 Nashr Tafsilotlari:</h4>
+				<p id="finalOptions"></p>
+				<p id="finalPaper"></p>
+				<div class="divider"></div>
+				<p id="totalPrice" class="total"></p>
+				<p id="statusTag" class="status"></p>
+			</div>
+		</div>
+
+		<script src="proyekt_nullish_coalescing.js"></script>
+	</body>
+</html>

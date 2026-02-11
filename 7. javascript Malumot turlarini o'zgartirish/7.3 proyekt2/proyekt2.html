@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Document</title>
+		<link rel="stylesheet" href="proyekt2.css" />
+		<script src="proyekt2.js" defer></script>
+	</head>
+	<body>
+		<div class="product-card">
+			<div class="badge" id="stockBadge">Skladda bor</div>
+		
+			<h3>iPhone 15 Pro</h3>
+			<p>Narxi: <span id="pricePerUnit">1200</span>$</p>
+
+			<div class="counter">
+				<button id="minusBtn">-</button>
+				<input type="number" id="quantityInput" value="0" readonly  />
+				<button id="plusBtn">+</button>
+			</div>
+
+			<div class="delivery-option">
+				<label>
+					<input type="checkbox" id="fastDelivery" /> Tezkor yetkazib berish
+					(+50$)
+				</label>
+			</div>
+
+			<div class="summary">
+				<p>Jami: <strong id="totalPrice">1200</strong> $</p>
+			</div>
+
+			<button id="orderBtn">Buyurtma berish</button>
+			<p id="msg"></p>
+		</div>
+	</body>
+</html>

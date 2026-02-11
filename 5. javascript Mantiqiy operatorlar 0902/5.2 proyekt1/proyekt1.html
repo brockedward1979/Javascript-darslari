@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="uz">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Smart Restaurant System</title>
+  <link rel="stylesheet" href="proyekt1.css">
+</head>
+
+<body>
+
+  <div class="restaurant-card">
+    <h2>🍴 "IT Park" Restorani</h2>
+
+    <div class="input-group">
+      <input type="text" id="ismi" placeholder="Ismingiz (ixtiyoriy)">
+      <input type="number" id="narxi" placeholder="Buyurtma summasi (so'm)">
+      <button onclick="checkOrder()">Buyurtmani hisoblash</button>
+    </div>
+
+    <div id="bill">
+      <p id="default_ismi">Mijoz: -</p>
+      <p id="narx_chegirma">Jami summa: 0 so'm</p>
+      <div id="promo-msg" style="color: #e67e22; font-weight: bold;"></div>
+    </div>
+  </div>
+
+  <script src="proyekt1.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="uz">
+	<head>
+		<meta charset="UTF-8" />
+		<title>Real-Time Tracking System</title>
+		<link rel="stylesheet" href="switch_case1.css" />
+	</head>
+	<body>
+		<div class="card">
+			<h2>Buyurtma Tracking</h2>
+			<p id="order-id">ID: #UZ-2026-FLASH</p>
+
+			<div class="progress-container">
+				<div id="progress-line"></div>
+			</div>
+
+			<div class="status-box">
+				<h1 id="status-icon">📦</h1>
+				<p id="status-text">Buyurtma berildi</p>
+			</div>
+
+			<p id="message-text">Harakatni boshlash uchun tugmalarni bosing.</p>
+
+			<div class="control-panel">
+				<button class="btn" onclick="updateApp('step1')">Qabul qilindi</button>
+				<button class="btn" onclick="updateApp('step2')">Yo'lga chiqdi</button>
+				<button class="btn" onclick="updateApp('step3')">Yetkazildi</button>
+				<button class="btn btn-reset" onclick="updateApp('reset')">
+					Qayta tiklash
+				</button>
+			</div>
+		</div>
+
+		<script src="switch_case1.js"></script>
+	</body>
+</html>

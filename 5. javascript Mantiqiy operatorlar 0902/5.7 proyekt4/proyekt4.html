@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="uz">
+	<head>
+		<meta charset="UTF-8" />
+		<title>Logic Theme Switcher</title>
+		<link rel="stylesheet" href="proyekt4.css" />
+	</head>
+	<body>
+		<div class="theme-card">
+			<h1>Mavzuni tanlang</h1>
+
+			<div class="options">
+				<label>
+					<input
+						type="radio"
+						id="dark-opt"
+						name="theme"
+						onchange="updateTheme()" />
+					Dark Mode
+				</label>
+				<label>
+					<input
+						type="radio"
+						id="green-opt"
+						name="theme"
+						onchange="updateTheme()" />
+					Green Mode
+				</label>
+				<label>
+					<input
+						type="radio"
+						id="light-opt"
+						name="theme"
+						onchange="updateTheme()"
+						checked />
+					Light Mode
+				</label>
+			</div>
+
+			<p>Hozirgi holat mantiqiy operatorlar orqali tekshirilmoqda.</p>
+		</div>
+
+		<script src="proyekt4.js"></script>
+	</body>
+</html>

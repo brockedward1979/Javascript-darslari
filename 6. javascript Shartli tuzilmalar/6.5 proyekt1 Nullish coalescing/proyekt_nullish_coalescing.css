@@ -1,0 +1,93 @@
+/* Sahifa markazda bo'lishi uchun */
+body {
+	background-color: #f4f4f4;
+	font-family: Arial, sans-serif;
+	padding: 50px;
+	text-align: center;
+	overflow-y: scroll;
+}
+
+/* Asosiy blok (kard) */
+.card {
+	background-color: white;
+	padding: 20px;
+	border: 1px solid #ccc;
+	border-radius: 10px;
+	width: 350px;
+	margin: 0 auto; /* O'rtaga tekislash */
+	
+}
+
+/* Sarlavha */
+h2 {
+	color: #333;
+}
+
+/* Tanlovlar guruhi (checkboxlar) */
+.selection-group {
+	text-align: left;
+	margin-bottom: 20px;
+}
+
+.item {
+	margin-bottom: 10px;
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	
+}
+
+/* Tugma */
+.btn {
+	width: 100%;
+	padding: 10px;
+	background-color: #007bff;
+	color: white;
+	border: none;
+	cursor: pointer;
+	font-size: 16px;
+
+	transition: 0.3s ease;
+}
+
+.btn:hover {
+	background-color: #16e50b;
+}
+
+/* Tugma bosilgandagi holat */
+.btn:active {
+	background-color: #0056b3;
+}
+
+/* Natijalar bloki (Check) */
+.receipt {
+	margin-top: 20px;
+	padding: 15px;
+	background-color: #e9ecef;
+	text-align: left;
+	border-radius: 5px;
+}
+
+/* Jami summa matni */
+.total {
+	font-weight: bold;
+	color: green;
+}
+
+#paperSelect{
+	margin: 30px 0;
+	padding: 10px;
+
+}
+
+.checkbox{
+	width: 20px;
+	height: 20px;
+	accent-color: #ffd900;
+
+	cursor: pointer;
+}
+
+label{
+	cursor: pointer;
+}
