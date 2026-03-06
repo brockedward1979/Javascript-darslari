@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="uz">
+	<head>
+		<meta charset="UTF-8" />
+		<title>Mastery Quiz - Strict Logic</title>
+		<link rel="stylesheet" href="proyekt1.css" />
+	</head>
+	<body>
+		<div class="quiz-box">
+			<div id="status-bar">Urinish: <span id="attempt-ui">1</span> | Ball: <span id="score-ui">0</span>/10</div>
+
+			<div id="game-area">
+				<h3 id="question-text">Testni boshlash uchun tugmani bosing</h3>
+				<div id="options-area"></div>
+				<button id="main-btn" onclick="nextStep()">TESTNI BOSHLASH</button>
+			</div>
+
+			<div id="final-screen" class="hidden">
+				<h1 style="color: #4ade80">MUVAFFAQIYAT! 🏆</h1>
+				<p>Siz 8 balldan yuqori natija ko'rsatdingiz.</p>
+			</div>
+		</div>
+		<script src="proyekt1.js"></script>
+	</body>
+</html>

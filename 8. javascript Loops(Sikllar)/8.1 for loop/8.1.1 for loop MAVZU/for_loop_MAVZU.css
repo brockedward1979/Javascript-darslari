@@ -1,0 +1,15 @@
+ul{
+  background-color: aquamarine;
+  border-radius: 3px;
+}
+
+li{
+  border: 1px dotted #000;
+  list-style-type: none;
+}
+
+.ota{
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}

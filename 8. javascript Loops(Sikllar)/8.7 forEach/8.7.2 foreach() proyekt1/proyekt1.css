@@ -1,0 +1,39 @@
+body {
+	font-family: sans-serif;
+	background: #f0f2f5;
+	text-align: center;
+	padding: 20px;
+}
+h1 {
+	color: #2c3e50;
+}
+
+table {
+	width: 80%;
+	margin: 20px auto;
+	border-collapse: collapse; /* Chiziqlarni birlashtirish */
+	background: white;
+	box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+th,
+td {
+	padding: 15px;
+	border: 1px solid #ddd;
+	text-align: center;
+}
+
+th {
+	background: #3498db;
+	color: white;
+}
+tr:nth-child(even) {
+	background: #f9f9f9;
+} /* Juft qatorlarni bo'yash */
+
+img {
+	width: 60px;
+	height: 80px;
+	object-fit: cover;
+	border-radius: 5px;
+}

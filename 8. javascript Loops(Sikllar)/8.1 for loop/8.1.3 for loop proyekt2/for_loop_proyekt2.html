@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="uz">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Admin</title>
+		<link rel="stylesheet" href="for_loop_proyekt2.css" />
+	</head>
+	<body>
+		<div class="dashboard-container">
+			<aside class="sidebar">
+				<h2>Admin</h2>
+				<ul>
+					<li class="active">Maxsulotlar</li>
+					<li>Buyurtmalar</li>
+					<li>Mijozlar</li>
+				</ul>
+			</aside>
+
+			<main class="content">
+				<header>
+					<h1>Sklad Nazorati</h1>
+					<div class="stats">
+						<span id="productCount">Jami: 0 ta tovar</span>
+					</div>
+				</header>
+
+				<div class="filter-bar">
+					<div class="search-box">
+						<label>Kategoriya:</label>
+						<select id="categoryFilter" onchange="applyFilters()">
+							<option value="All">Barchasi</option>
+							<option value="Elektronika">Elektronika</option>
+							<option value="Kiyim-kechak">Kiyim-kechak</option>
+							<option value="Maishiy texnika">Maishiy texnika</option>
+							<option value="Aksessuarlar">Aksessuarlar</option>
+						</select>
+					</div>
+
+					<div class="search-box">
+						<label>Holati:</label>
+						<select id="statusFilter" onchange="applyFilters()">
+							<option value="All">Barchasi</option>
+							<option value="InStock">Skladda bor</option>
+							<option value="OutOfStock">Tugagan</option>
+						</select>
+					</div>
+				</div>
+
+				<div class="table-container">
+					<table>
+						<thead>
+							<tr>
+								<th>Rasm</th>
+								<th>Tovar nomi</th>
+								<th>Kategoriya</th>
+								<th>Narxi</th>
+								<th>Soni</th>
+								<th>Holati</th>
+							</tr>
+						</thead>
+						<tbody id="productTableBody"></tbody>
+					</table>
+				</div>
+			</main>
+		</div>
+
+		<script src="for_loop_proyekt2.js" type="module"></script>
+	</body>
+</html>

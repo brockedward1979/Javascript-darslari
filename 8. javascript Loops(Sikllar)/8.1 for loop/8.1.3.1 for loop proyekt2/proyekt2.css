@@ -1,0 +1,68 @@
+*{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+
+
+
+.ota {
+  display: grid;
+  /* Ustunlar: sidebar 150px, qolgan joy content uchun */
+  grid-template-columns: 150px 1fr; 
+  
+  /* Qatorlar: header (100px), asosiy qism (auto - qolgan hamma joy), footer (auto) */
+  grid-template-rows: 70px 1fr auto; 
+  
+  
+  height: 100vh; /* Butun ekranni egallashi uchun */
+}
+
+.header {
+  grid-column: 1 / -1; /* Birinchi ustundan oxirgisigacha */
+  background-color: aqua;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sidebar {
+  grid-row: 2 / 3; /* Faqat o'rtadagi qatorda tursin */
+  background-color: bisque;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.content {
+  grid-row: 2 / 3; /* Sidebar bilan bir qatorda tursin */
+  background-color: cadetblue;
+  padding: 10px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  grid-gap: 15px;
+  overflow-y: auto; /* Rasmlar ko'paysa, faqat shu qism skroll bo'lishi uchun */
+}
+
+.footer {
+  grid-column: 1 / -1;
+  background-color: rgb(192, 137, 116);
+  padding: 20px;
+  text-align: center;
+}
+
+/* Rasmlar chiroyli chiqishi uchun */
+.rasmlar {
+  width: 100%;
+  height: 200px; /* Aniq balandlik bersangiz, setka chiroyli chiqadi */
+  object-fit: cover;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  transition: transform 0.3s ease;
+}
+
+.rasmlar:hover {
+  transform: scale(1.05); /* Rasm ustiga borganda kattalashish effekti */
+}

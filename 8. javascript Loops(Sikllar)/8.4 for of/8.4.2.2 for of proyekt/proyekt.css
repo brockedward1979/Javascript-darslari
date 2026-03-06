@@ -1,0 +1,31 @@
+
+
+td{
+  border: 1px solid #000;
+  padding: 10px;
+}
+
+table{
+  border: 1px solid #000;
+  border-collapse: collapse;
+  width: 100%;
+  text-align: left;
+}
+
+th{
+  border: 1px solid #000;
+  background-color: aquamarine;
+}
+
+tfoot{
+  background-color: rgb(75, 165, 165);
+}
+
+tr:hover{
+  background-color: rgb(141, 225, 225);
+  cursor: pointer;
+}
+
+button{
+  margin-bottom: 15px;
+}

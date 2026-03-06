@@ -1,0 +1,27 @@
+.ota{
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  place-items: center;
+  border: 1px solid #c7bdbd;
+  border-radius: 10px;
+  padding: 20px;
+  background-color: azure;
+}
+
+#btn{
+  padding: 5px 40px;
+
+  background-color: aquamarine;
+  border: 1px solid transparent;
+  border-radius: 5px;
+}
+
+#btn:hover{
+  border: 1px solid #000;
+
+}
+
+.input{
+  font-size: 25px;
+}
