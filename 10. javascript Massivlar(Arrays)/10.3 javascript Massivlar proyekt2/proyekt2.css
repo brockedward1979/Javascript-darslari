@@ -1,0 +1,47 @@
+.quti {
+	width: 200px;
+	height: 200px;
+	border: 1px solid #000;
+	background-color: aquamarine;
+
+	text-align: center;
+	line-height: 200px;
+
+	transition: 2s all;
+}
+
+body {
+	border: 1px solid #000;
+	height: 100vh;
+	margin: 0;
+	padding: 0;
+}
+
+.umumiy {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+
+	margin: 50px auto;
+}
+
+.buttons {
+	display: flex;
+	gap: 10px;
+	margin: 20px;
+}
+
+.btn {
+	border: none;
+	padding: 10px 20px;
+	border-radius: 3px;
+	cursor: pointer;
+	background-image: linear-gradient(to right, #4caf50, #074b07);
+	color: white;
+
+	transition: 2s all;
+}
+
+.btn:hover {
+	background-image: radial-gradient(circle, #4caf50, #074b07);
+}

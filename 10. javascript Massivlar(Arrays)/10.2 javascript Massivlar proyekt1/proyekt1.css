@@ -1,0 +1,118 @@
+/* body {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	height: 100vh;
+	margin: 0;
+	font-family: "Segoe UI", sans-serif;
+	background-color: #f5f5f5;
+}
+
+#box {
+	width: 350px;
+	height: 200px;
+	background-color: white;
+	border: 2px solid #ddd;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin-bottom: 30px;
+	transition: all 0.5s ease;
+	text-align: center;
+	padding: 20px;
+}
+
+.btn-group button {
+	padding: 12px 20px;
+	margin: 0 5px;
+	cursor: pointer;
+	border: none;
+	border-radius: 8px;
+	background-color: #3498db;
+	color: white;
+	font-weight: bold;
+	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+	transition: 0.2s;
+}
+
+.btn-group button:hover {
+	background-color: #2980b9;
+	transform: translateY(-2px);
+} */
+
+
+.buttons{
+	background-color: #3498db;
+	border: 1px solid #000;
+	padding: 10px 20px;
+	display: flex;
+	justify-content: center;
+	gap: 20px;
+}
+
+.btn{
+	border: none;
+	padding: 10px 20px;
+	border-radius: 3px;
+	background-image: linear-gradient(45deg, #3498db, #f3fafe);
+	transition: 0.2s;
+}
+
+.btn:hover{
+	background-image: linear-gradient(90deg, #2980b9, #f3fafe);
+	cursor: pointer;
+	transform: translateY(-2px);
+	
+}
+
+.btn:active{
+	transform: scale(1.1)
+}
+
+.quti{
+	background-color: antiquewhite;
+	padding: 20px;
+	margin-bottom: 10px;
+	text-align: center;
+	
+	max-width: 300px;
+	margin: 30px auto;
+
+	transition: 2s;
+	
+}
+
+.umumiy{
+
+	
+	height: 100vh;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	
+}
+
+body{
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+
+.h1_lar{
+	text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);
+}
+
+.ota{
+	display: flex;
+	gap: 10px;
+	margin: 10px;
+}
+
+.rasmlar{
+	width: 200px;
+	height: 200px;
+	object-fit: cover;
+	border-radius: 5px;
+
+}
