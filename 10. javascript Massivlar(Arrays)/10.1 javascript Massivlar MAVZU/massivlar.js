@@ -1,5 +1,16 @@
 ////////?    MASSIVLAR(ARRAYS)     //////////
 
+// JavaScriptda massiv aslida obyektdir. Uning indekslari esa kalit (key) vazifasini bajaradi.
+
+// Masalan:
+
+let array = ["salom", "dunyo", "javascript", "arrays"];
+
+// bu yerda massivning 0 indeksi - massivning kaliti va uning qiymati shu 0-indeksda turgan elementning qiymatidir
+// bu yerda massivning 1 indeksi - massivning kaliti va uning qiymati shu 1-indeksda turgan elementning qiymatidir
+// bu yerda massivning 2 indeksi - massivning kaliti va uning qiymati shu 2-indeksda turgan elementning qiymatidir
+// bu yerda massivning 3 indeksi - massivning kaliti va uning qiymati shu 3-indeksda turgan elementning qiymatidir
+
 // let massiv = [2026, 29, 3, 47, 5]
 
 // console.log("Massivning elementlar soni: " + massiv.length)
