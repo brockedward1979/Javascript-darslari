@@ -1,0 +1,25 @@
+
+body{
+  background-image: url(rasmlar/office.jpg);
+  background-size: cover;
+}
+
+
+
+#dialog{
+
+  background-color: white;
+  border-radius: 5px;
+  border: 1px solid transparent;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  padding: 20px;
+  width: 300px;
+}
+
+
+#dialog::backdrop{
+
+  background-color: rgba(213, 63, 17, 0.5);
+
+
+}

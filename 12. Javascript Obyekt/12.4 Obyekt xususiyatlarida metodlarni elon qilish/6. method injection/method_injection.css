@@ -1,0 +1,187 @@
+/* 1. Umumiy sozlamalar */
+* {
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0;
+}
+
+body {
+	font-family: "Segoe UI", Roboto, sans-serif;
+	background-color: #f4f7f9;
+	color: #333;
+	line-height: 1.6;
+	padding: 20px;
+}
+
+.title {
+	text-align: center;
+	margin-bottom: 30px;
+	font-size: 2rem;
+	color: #2c3e50;
+}
+
+/* 2. Responsive Grid Konteyner */
+.grid-container {
+	display: grid;
+	/* Mobil qurilmalar uchun 1 ta ustun */
+	grid-template-columns: 1fr;
+	gap: 20px;
+	max-width: 1200px;
+	margin: 0 auto;
+}
+
+/* Planshetlar uchun (600px dan katta) */
+@media (min-width: 600px) {
+	.grid-container {
+		grid-template-columns: repeat(2, 1fr);
+	}
+}
+
+/* Kompyuterlar uchun (1000px dan katta) */
+@media (min-width: 1000px) {
+	.grid-container {
+		grid-template-columns: repeat(3, 1fr);
+	}
+}
+
+/* 3. Mahsulot Kartochkasi */
+.card {
+	background: white;
+	border-radius: 12px;
+	overflow: hidden;
+	display: flex;
+	flex-direction: column;
+	transition: transform 0.3s ease, box-shadow 0.3s ease;
+	border: 1px solid #eee;
+}
+
+.card:hover {
+	transform: translateY(-5px);
+	box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.card img {
+	width: 100%;
+	height: 200px;
+	object-fit: cover;
+}
+
+.card-content {
+	padding: 20px;
+	flex-grow: 1;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.card h3 {
+	font-size: 1.25rem;
+	margin-bottom: 10px;
+}
+
+.price {
+	color: #27ae60;
+	font-weight: bold;
+	font-size: 1.1rem;
+	margin-bottom: 15px;
+}
+
+.btn-detail {
+	background-color: #3498db;
+	color: white;
+	border: none;
+	padding: 12px;
+	border-radius: 6px;
+	cursor: pointer;
+	font-weight: 600;
+	transition: background 0.2s;
+}
+
+.btn-detail:hover {
+	background-color: #2980b9;
+}
+
+/* 4. Modal (Batafsil ko'rinish) */
+.modal {
+	display: none;
+	position: fixed;
+	z-index: 1000;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: rgba(0, 0, 0, 0.8);
+	backdrop-filter: blur(5px);
+	justify-content: center;
+	align-items: center;
+	padding: 15px;
+}
+
+.modal-content {
+	background: white;
+	width: 100%;
+	max-width: 800px;
+	border-radius: 15px;
+	position: relative;
+	overflow: hidden;
+	animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+	from {
+		opacity: 0;
+		transform: scale(0.9);
+	}
+	to {
+		opacity: 1;
+		transform: scale(1);
+	}
+}
+
+.close {
+	position: absolute;
+	right: 15px;
+	top: 10px;
+	font-size: 28px;
+	cursor: pointer;
+	z-index: 10;
+	color: #333;
+}
+
+/* Modal ichidagi tartib */
+.detail-info {
+	display: flex;
+	flex-direction: column; /* Mobilda rasm tepada */
+}
+
+@media (min-width: 768px) {
+	.detail-info {
+		flex-direction: row; /* Katta ekranda rasm yonida */
+	}
+}
+
+.detail-img {
+	width: 100%;
+	max-height: 400px;
+	object-fit: cover;
+}
+
+@media (min-width: 768px) {
+	.detail-img {
+		width: 45%;
+	}
+}
+
+.detail-text {
+	padding: 30px;
+	display: flex;
+	flex-direction: column;
+	gap: 15px;
+}
+
+.detail-text h2 {
+	font-size: 1.8rem;
+}
+.detail-text p {
+	color: #666;
+}

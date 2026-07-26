@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="uz">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Dinamik Metod Boshqaruvi</title>
+		<link rel="stylesheet" href="style.css" />
+	</head>
+	<body>
+		<div class="app-container">
+			<div class="block super-admin-block">
+				<h3>🛡️ Superadmin Boshqaruvi</h3>
+				<p>Admin: <strong>Anvar Otabekovich</strong></p>
+				<button id="promote-btn">Foydalanuvchini Admin qilish</button>
+			</div>
+
+			<hr class="divider" />
+
+			<div class="block user-block">
+				<h3>👤 Foydalanuvchi Profili</h3>
+				<p>Ism: <b id="u-name">Shoxjahon</b></p>
+				<p>Rol: <span id="u-role" class="badge">user</span></p>
+
+				<h4>Mavjud Loyihalar:</h4>
+				<ul id="data-list">
+					<li>Veb-sayt dizayni <button class="del-btn">O'chirish</button></li>
+					<li>Telegram bot <button class="del-btn">O'chirish</button></li>
+					<li>Mobil ilova <button class="del-btn">O'chirish</button></li>
+				</ul>
+			</div>
+		</div>
+
+		<script src="script.js"></script>
+	</body>
+</html>

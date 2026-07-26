@@ -1,0 +1,1525 @@
+<!DOCTYPE html>
+<html lang="uz">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JavaScript Event Loop — Interaktiv Vizualizator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Syne:wght@400;600;700;800&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --bg: #090B12;
+      --surface: #10131C;
+      --surface2: #161A27;
+      --surface3: #1C2133;
+      --border: #222740;
+      --border2: #2E3454;
+      --text: #E8EAF2;
+      --muted: #5A6080;
+      --sync-bg: #1A172E;
+      --sync-fg: #A89EFF;
+      --sync-border: #3D3590;
+      --micro-bg: #0C1E1A;
+      --micro-fg: #4DD9A4;
+      --micro-border: #1A5E47;
+      --macro-bg: #211608;
+      --macro-fg: #F5A623;
+      --macro-border: #6B3F0E;
+      --web-bg: #0B1A28;
+      --web-fg: #5BB4F5;
+      --web-border: #1A4470;
+      --el-bg: #1A1228;
+      --el-fg: #E879F9;
+      --el-border: #7C2C9A;
+      --glow-sync: rgba(168, 158, 255, 0.18);
+      --glow-micro: rgba(77, 217, 164, 0.18);
+      --glow-macro: rgba(245, 166, 35, 0.18);
+      --glow-web: rgba(91, 180, 245, 0.18);
+      --glow-el: rgba(232, 121, 249, 0.18);
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Syne', sans-serif;
+      min-height: 100vh;
+      padding: 24px 16px 60px;
+      background-image:
+        radial-gradient(ellipse 70% 50% at 15% 0%, rgba(80, 55, 200, 0.07) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 40% at 85% 90%, rgba(30, 90, 160, 0.07) 0%, transparent 60%),
+        radial-gradient(ellipse 40% 30% at 50% 50%, rgba(232, 121, 249, 0.03) 0%, transparent 60%);
+    }
+
+    .page {
+      width: 100%;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    /* ── HEADER ── */
+    header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .header-left h1 {
+      font-size: clamp(22px, 3.5vw, 34px);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1;
+      background: linear-gradient(135deg, #E8EAF2 0%, #A89EFF 40%, #E879F9 70%, #5BB4F5 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .header-left p {
+      margin-top: 5px;
+      font-size: 12px;
+      color: var(--muted);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .badges {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .badge {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      padding: 3px 9px;
+      border-radius: 20px;
+      text-transform: uppercase;
+      border: 1px solid;
+    }
+
+    .b-sync {
+      background: var(--sync-bg);
+      color: var(--sync-fg);
+      border-color: var(--sync-border);
+    }
+
+    .b-micro {
+      background: var(--micro-bg);
+      color: var(--micro-fg);
+      border-color: var(--micro-border);
+    }
+
+    .b-macro {
+      background: var(--macro-bg);
+      color: var(--macro-fg);
+      border-color: var(--macro-border);
+    }
+
+    .b-web {
+      background: var(--web-bg);
+      color: var(--web-fg);
+      border-color: var(--web-border);
+    }
+
+    .b-el {
+      background: var(--el-bg);
+      color: var(--el-fg);
+      border-color: var(--el-border);
+    }
+
+    /* ── PROGRESS ── */
+    .progress-bar-wrap {
+      height: 3px;
+      background: var(--border);
+      border-radius: 3px;
+      margin-bottom: 20px;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #A89EFF, #E879F9, #5BB4F5);
+      border-radius: 3px;
+      transition: width 0.4s ease;
+      box-shadow: 0 0 10px rgba(168, 158, 255, 0.5);
+    }
+
+    /* ── MAIN LAYOUT ── */
+    .main-layout {
+      display: grid;
+      grid-template-columns: 380px 1fr;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    @media (max-width: 900px) {
+      .main-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* ── LEFT: CODE PANEL ── */
+    .code-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      position: sticky;
+      top: 16px;
+      height: fit-content;
+    }
+
+    .code-topbar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface2);
+      flex-shrink: 0;
+    }
+
+    .dot-r {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #FF5F56;
+    }
+
+    .dot-y {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #FFBD2E;
+    }
+
+    .dot-g {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #27C93F;
+    }
+
+    .code-topbar span {
+      margin-left: 6px;
+      font-size: 11px;
+      color: var(--muted);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .code-body {
+      padding: 10px 0;
+      flex: 1;
+    }
+
+    .cl {
+      display: flex;
+      align-items: center;
+      padding: 2px 14px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      line-height: 1.9;
+      transition: background 0.3s, opacity 0.3s;
+      white-space: pre;
+      cursor: default;
+      border-left: 3px solid transparent;
+    }
+
+    .ln {
+      display: inline-block;
+      width: 24px;
+      color: #2E3450;
+      font-size: 10.5px;
+      user-select: none;
+      flex-shrink: 0;
+      text-align: right;
+      margin-right: 12px;
+    }
+
+    .cl-text {
+      flex: 1;
+    }
+
+    .cl.a-sync {
+      background: rgba(168, 158, 255, 0.1);
+      border-left-color: var(--sync-fg);
+    }
+
+    .cl.a-micro {
+      background: rgba(77, 217, 164, 0.1);
+      border-left-color: var(--micro-fg);
+    }
+
+    .cl.a-macro {
+      background: rgba(245, 166, 35, 0.1);
+      border-left-color: var(--macro-fg);
+    }
+
+    .cl.a-web {
+      background: rgba(91, 180, 245, 0.1);
+      border-left-color: var(--web-fg);
+    }
+
+    .cl.faded {
+      opacity: 0.2;
+    }
+
+    .cmt {
+      color: #383E60;
+    }
+
+    .str {
+      color: #4DD9A4;
+    }
+
+    .kw {
+      color: #A89EFF;
+    }
+
+    .fn {
+      color: #5BB4F5;
+    }
+
+    .num {
+      color: #F5A623;
+    }
+
+    /* ── RIGHT: EVENT LOOP ARENA ── */
+    .right-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    /* Top row: 4 boxes */
+    .arena-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr 1fr;
+      gap: 12px;
+    }
+
+    @media (max-width: 700px) {
+      .arena-row {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    .box {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: var(--surface);
+      display: flex;
+      flex-direction: column;
+      min-height: 160px;
+      transition: border-color 0.35s, box-shadow 0.35s;
+      overflow: hidden;
+    }
+
+    .box.hl-sync {
+      border-color: var(--sync-border);
+      box-shadow: 0 0 0 2px var(--glow-sync), inset 0 0 24px var(--glow-sync);
+    }
+
+    .box.hl-micro {
+      border-color: var(--micro-border);
+      box-shadow: 0 0 0 2px var(--glow-micro), inset 0 0 24px var(--glow-micro);
+    }
+
+    .box.hl-macro {
+      border-color: var(--macro-border);
+      box-shadow: 0 0 0 2px var(--glow-macro), inset 0 0 24px var(--glow-macro);
+    }
+
+    .box.hl-web {
+      border-color: var(--web-border);
+      box-shadow: 0 0 0 2px var(--glow-web), inset 0 0 24px var(--glow-web);
+    }
+
+    .box.hl-el {
+      border-color: var(--el-border);
+      box-shadow: 0 0 0 2px var(--glow-el), inset 0 0 24px var(--glow-el);
+    }
+
+    .box-lbl {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 8px 10px 7px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface2);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .ld {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .ld-sync {
+      background: var(--sync-fg);
+      box-shadow: 0 0 5px var(--sync-fg);
+    }
+
+    .ld-micro {
+      background: var(--micro-fg);
+      box-shadow: 0 0 5px var(--micro-fg);
+    }
+
+    .ld-macro {
+      background: var(--macro-fg);
+      box-shadow: 0 0 5px var(--macro-fg);
+    }
+
+    .ld-web {
+      background: var(--web-fg);
+      box-shadow: 0 0 5px var(--web-fg);
+    }
+
+    .ld-el {
+      background: var(--el-fg);
+      box-shadow: 0 0 5px var(--el-fg);
+    }
+
+    .box-body {
+      flex: 1;
+      padding: 7px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      justify-content: flex-end;
+      overflow: hidden;
+    }
+
+    .box-body.stack-dir {
+      flex-direction: column-reverse;
+      justify-content: flex-start;
+    }
+
+    .chip {
+      border-radius: 7px;
+      padding: 5px 9px;
+      font-size: 10.5px;
+      font-weight: 600;
+      font-family: 'JetBrains Mono', monospace;
+      text-align: center;
+      border: 1px solid;
+      position: relative;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .chip::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), transparent);
+      pointer-events: none;
+    }
+
+    .chip.entering {
+      animation: chipIn 0.4s cubic-bezier(.4, 1.4, .6, 1) forwards;
+    }
+
+    .chip.exiting {
+      animation: chipOut 0.25s ease-in forwards;
+    }
+
+    @keyframes chipIn {
+      from {
+        opacity: 0;
+        transform: translateY(-12px) scale(.8);
+      }
+
+      to {
+        opacity: 1;
+        transform: none;
+      }
+    }
+
+    @keyframes chipOut {
+      from {
+        opacity: 1;
+        transform: scale(1);
+      }
+
+      to {
+        opacity: 0;
+        transform: scale(.6);
+      }
+    }
+
+    .c-sync {
+      background: var(--sync-bg);
+      color: var(--sync-fg);
+      border-color: var(--sync-border);
+    }
+
+    .c-micro {
+      background: var(--micro-bg);
+      color: var(--micro-fg);
+      border-color: var(--micro-border);
+    }
+
+    .c-macro {
+      background: var(--macro-bg);
+      color: var(--macro-fg);
+      border-color: var(--macro-border);
+    }
+
+    .c-web {
+      background: var(--web-bg);
+      color: var(--web-fg);
+      border-color: var(--web-border);
+    }
+
+    .timer-bar {
+      height: 2px;
+      border-radius: 2px;
+      background: var(--web-fg);
+      width: 100%;
+      margin-top: 4px;
+      box-shadow: 0 0 5px var(--web-fg);
+    }
+
+    /* ── EVENT LOOP WIDGET ── */
+    .el-widget {
+      background: var(--surface);
+      border: 1px solid var(--el-border);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: inset 0 0 30px var(--glow-el);
+    }
+
+    .el-topbar {
+      padding: 8px 12px;
+      border-bottom: 1px solid var(--el-border);
+      background: var(--el-bg);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--el-fg);
+    }
+
+    .el-body {
+      padding: 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .el-step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      flex: 1;
+      min-width: 80px;
+    }
+
+    .el-step-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      border: 2px solid var(--border2);
+      background: var(--surface2);
+      transition: all 0.4s;
+      flex-shrink: 0;
+    }
+
+    .el-step-label {
+      font-size: 9.5px;
+      font-weight: 700;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      text-align: center;
+      color: var(--muted);
+      transition: color 0.4s;
+    }
+
+    .el-arrow {
+      font-size: 18px;
+      color: var(--border2);
+      transition: color 0.4s;
+      flex-shrink: 0;
+    }
+
+    .el-step.active .el-step-icon {
+      border-color: var(--el-fg);
+      box-shadow: 0 0 0 3px var(--glow-el), 0 0 20px var(--glow-el);
+      animation: elPulse 1s ease-in-out infinite alternate;
+    }
+
+    .el-step.active .el-step-label {
+      color: var(--el-fg);
+    }
+
+    .el-step.done .el-step-icon {
+      border-color: #2E8B57;
+      background: rgba(46, 139, 87, 0.15);
+    }
+
+    .el-step.done .el-step-label {
+      color: #4DD9A4;
+    }
+
+    @keyframes elPulse {
+      from {
+        transform: scale(1);
+      }
+
+      to {
+        transform: scale(1.08);
+      }
+    }
+
+    .el-status {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--el-fg);
+      padding: 6px 12px;
+      border-radius: 20px;
+      background: rgba(232, 121, 249, 0.08);
+      border: 1px solid var(--el-border);
+      text-align: center;
+      margin-top: 2px;
+      min-width: 180px;
+      white-space: nowrap;
+    }
+
+    /* ── CONSOLE OUTPUT ── */
+    .out-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .out-topbar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface2);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .out-body {
+      padding: 8px 12px;
+      min-height: 34px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      align-items: center;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .out-chip {
+      padding: 2px 9px;
+      border-radius: 20px;
+      font-size: 10.5px;
+      font-weight: 600;
+      border: 1px solid;
+      animation: pop 0.35s cubic-bezier(.4, 1.4, .6, 1);
+    }
+
+    @keyframes pop {
+      from {
+        opacity: 0;
+        transform: scale(.5);
+      }
+
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    /* ── CONTROLS ── */
+    .controls {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+
+    .btn {
+      padding: 9px 18px;
+      font-family: 'Syne', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      border-radius: 10px;
+      cursor: pointer;
+      border: 1px solid var(--border2);
+      background: var(--surface2);
+      color: var(--text);
+      transition: background 0.15s, transform 0.1s, box-shadow 0.2s;
+    }
+
+    .btn:hover {
+      background: var(--border);
+    }
+
+    .btn:active {
+      transform: scale(.96);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #3730A8, #7C2C9A);
+      border-color: #6040C0;
+      color: #fff;
+      box-shadow: 0 0 20px rgba(120, 60, 200, 0.3);
+    }
+
+    .btn-primary:hover {
+      box-shadow: 0 0 30px rgba(120, 60, 200, 0.5);
+    }
+
+    .btn-primary:disabled {
+      opacity: .3;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    .step-cnt {
+      margin-left: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .sp-row {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 11.5px;
+      color: var(--muted);
+    }
+
+    .sp-row input {
+      width: 80px;
+      accent-color: var(--el-fg);
+    }
+
+    /* ── EXPLAIN (step explanation) ── */
+    .explain-box {
+      padding: 13px 16px;
+      border-radius: 12px;
+      font-size: 13px;
+      line-height: 1.75;
+      border-left: 4px solid var(--border2);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left-width: 4px;
+      transition: border-left-color 0.3s, background 0.3s;
+      color: #B0B5D0;
+      min-height: 48px;
+    }
+
+    .explain-box b {
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .explain-box code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      padding: 1px 5px;
+      border-radius: 4px;
+      background: var(--surface2);
+      color: var(--sync-fg);
+    }
+
+    .explain-box.sync {
+      border-left-color: var(--sync-fg);
+      background: rgba(168, 158, 255, 0.04);
+    }
+
+    .explain-box.micro {
+      border-left-color: var(--micro-fg);
+      background: rgba(77, 217, 164, 0.04);
+    }
+
+    .explain-box.macro {
+      border-left-color: var(--macro-fg);
+      background: rgba(245, 166, 35, 0.04);
+    }
+
+    .explain-box.webapi {
+      border-left-color: var(--web-fg);
+      background: rgba(91, 180, 245, 0.04);
+    }
+
+    /* ── BOTTOM: DETAIL TABLE ── */
+    .detail-section {
+      margin-top: 28px;
+    }
+
+    .detail-title {
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      color: var(--text);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .detail-title::before {
+      content: '';
+      display: inline-block;
+      width: 3px;
+      height: 18px;
+      border-radius: 2px;
+      background: linear-gradient(#A89EFF, #E879F9);
+    }
+
+    .detail-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 12px;
+    }
+
+    .detail-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      transition: border-color 0.25s;
+    }
+
+    .detail-card:hover {
+      border-color: var(--border2);
+    }
+
+    .dc-head {
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface2);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .dc-num {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      font-size: 10px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .dc-title {
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .dc-type {
+      margin-left: auto;
+      font-size: 9.5px;
+      font-weight: 700;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      padding: 2px 8px;
+      border-radius: 20px;
+      border: 1px solid;
+    }
+
+    .dc-body {
+      padding: 12px 14px;
+      font-size: 12px;
+      line-height: 1.7;
+      color: #9DA5C0;
+    }
+
+    .dc-body b {
+      color: var(--text);
+      font-weight: 700;
+    }
+
+    .dc-body code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10.5px;
+      background: var(--surface3);
+      padding: 1px 4px;
+      border-radius: 3px;
+      color: var(--sync-fg);
+    }
+
+    .dc-body .note {
+      margin-top: 8px;
+      padding: 7px 10px;
+      border-radius: 7px;
+      font-size: 11px;
+      border-left: 3px solid;
+    }
+
+    .note-sync {
+      background: rgba(168, 158, 255, 0.06);
+      border-color: var(--sync-fg);
+      color: var(--sync-fg);
+    }
+
+    .note-micro {
+      background: rgba(77, 217, 164, 0.06);
+      border-color: var(--micro-fg);
+      color: var(--micro-fg);
+    }
+
+    .note-macro {
+      background: rgba(245, 166, 35, 0.06);
+      border-color: var(--macro-fg);
+      color: var(--macro-fg);
+    }
+
+    .note-web {
+      background: rgba(91, 180, 245, 0.06);
+      border-color: var(--web-fg);
+      color: var(--web-fg);
+    }
+
+    .note-el {
+      background: rgba(232, 121, 249, 0.06);
+      border-color: var(--el-fg);
+      color: var(--el-fg);
+    }
+
+    footer {
+      margin-top: 40px;
+      text-align: center;
+      font-size: 10.5px;
+      color: #2E3450;
+      font-family: 'JetBrains Mono', monospace;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="page">
+
+    <!-- HEADER -->
+    <header>
+      <div class="header-left">
+        <h1>JavaScript Event Loop</h1>
+        <p>// 3× sinxron · 3× microtask · 3× macrotask — interaktiv vizualizator</p>
+      </div>
+      <div class="badges">
+        <span class="badge b-sync">Sinxron</span>
+        <span class="badge b-web">Web API</span>
+        <span class="badge b-micro">Microtask</span>
+        <span class="badge b-macro">Macrotask</span>
+        <span class="badge b-el">Event Loop</span>
+      </div>
+    </header>
+
+    <!-- PROGRESS -->
+    <div class="progress-bar-wrap">
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
+
+    <!-- CONTROLS -->
+    <div class="controls">
+      <button class="btn btn-primary" id="nextBtn" onclick="nextStep()">▶ Keyingi qadam</button>
+      <button class="btn" onclick="resetAll()">↺ Qayta boshlash</button>
+      <div class="sp-row">
+        <span>Tezlik:</span>
+        <input type="range" min="200" max="1500" value="700" id="spd" step="100">
+      </div>
+      <span class="step-cnt" id="sc">0 / 16</span>
+    </div>
+
+    <!-- MAIN LAYOUT: LEFT=CODE, RIGHT=ARENA -->
+    <div class="main-layout">
+
+      <!-- LEFT: CODE PANEL -->
+      <div class="code-wrap">
+        <div class="code-topbar">
+          <div class="dot-r"></div>
+          <div class="dot-y"></div>
+          <div class="dot-g"></div>
+          <span>main.js</span>
+        </div>
+        <div class="code-body" id="codeBody">
+          <div class="cl" id="l0"><span class="ln">1</span><span class="cl-text"><span class="cmt">// 3 Sinxron · 3
+                Microtask · 3 Macrotask</span></span></div>
+          <div class="cl" id="l1"><span class="ln">2</span><span class="cl-text"><span class="kw">console</span>.<span
+                class="fn">log</span>(<span class="str">'1: Start'</span>);<span class="cmt"> // sinxron
+                #1</span></span></div>
+          <div class="cl" id="l2"><span class="ln">3</span><span class="cl-text"></span></div>
+          <div class="cl" id="l3"><span class="ln">4</span><span class="cl-text"><span
+                class="kw">setTimeout</span>(<span style="color:#F5A623">() =&gt; <span class="kw">console</span>.<span
+                  class="fn">log</span>(<span class="str">'7: t1'</span>)</span>, <span class="num">0</span>);<span
+                class="cmt"> // macro#1</span></span></div>
+          <div class="cl" id="l4"><span class="ln">5</span><span class="cl-text"><span
+                class="kw">setTimeout</span>(<span style="color:#F5A623">() =&gt; <span class="kw">console</span>.<span
+                  class="fn">log</span>(<span class="str">'8: t2'</span>)</span>, <span class="num">100</span>);<span
+                class="cmt"> // macro#2</span></span></div>
+          <div class="cl" id="l5"><span class="ln">6</span><span class="cl-text"><span
+                class="kw">setTimeout</span>(<span style="color:#F5A623">() =&gt; <span class="kw">console</span>.<span
+                  class="fn">log</span>(<span class="str">'9: t3'</span>)</span>, <span class="num">200</span>);<span
+                class="cmt"> // macro#3</span></span></div>
+          <div class="cl" id="l6"><span class="ln">7</span><span class="cl-text"></span></div>
+          <div class="cl" id="l7"><span class="ln">8</span><span class="cl-text"><span class="kw">Promise</span>.<span
+                class="fn">resolve</span>().<span class="fn">then</span>(<span style="color:#4DD9A4">() =&gt; <span
+                  class="kw">console</span>.<span class="fn">log</span>(<span class="str">'4:
+                  micro1'</span>)</span>);<span class="cmt"> // micro#1</span></span></div>
+          <div class="cl" id="l8"><span class="ln">9</span><span class="cl-text"><span class="kw">Promise</span>.<span
+                class="fn">resolve</span>().<span class="fn">then</span>(<span style="color:#4DD9A4">() =&gt; <span
+                  class="kw">console</span>.<span class="fn">log</span>(<span class="str">'5:
+                  micro2'</span>)</span>);<span class="cmt"> // micro#2</span></span></div>
+          <div class="cl" id="l9"><span class="ln">10</span><span class="cl-text"><span class="kw">Promise</span>.<span
+                class="fn">resolve</span>().<span class="fn">then</span>(<span style="color:#4DD9A4">() =&gt; <span
+                  class="kw">console</span>.<span class="fn">log</span>(<span class="str">'6:
+                  micro3'</span>)</span>);<span class="cmt"> // micro#3</span></span></div>
+          <div class="cl" id="l10"><span class="ln">11</span><span class="cl-text"></span></div>
+          <div class="cl" id="l11"><span class="ln">12</span><span class="cl-text"><span class="kw">console</span>.<span
+                class="fn">log</span>(<span class="str">'2: Middle'</span>);<span class="cmt"> // sinxron
+                #2</span></span></div>
+          <div class="cl" id="l12"><span class="ln">13</span><span class="cl-text"><span class="kw">console</span>.<span
+                class="fn">log</span>(<span class="str">'3: End'</span>);<span class="cmt"> // sinxron #3</span></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: EVENT LOOP ARENA -->
+      <div class="right-panel">
+
+        <!-- 4 Boxes row -->
+        <div class="arena-row">
+          <div class="box" id="boxCallStack">
+            <div class="box-lbl">
+              <div class="ld ld-sync"></div>Call Stack
+            </div>
+            <div class="box-body stack-dir" id="callStack"></div>
+          </div>
+          <div class="box" id="boxWebAPI">
+            <div class="box-lbl">
+              <div class="ld ld-web"></div>Web API
+            </div>
+            <div class="box-body" id="webAPI"></div>
+          </div>
+          <div class="box" id="boxMicroQ">
+            <div class="box-lbl">
+              <div class="ld ld-micro"></div>Microtask Queue
+            </div>
+            <div class="box-body" id="microQ"></div>
+          </div>
+          <div class="box" id="boxMacroQ">
+            <div class="box-lbl">
+              <div class="ld ld-macro"></div>Macrotask Queue
+            </div>
+            <div class="box-body" id="macroQ"></div>
+          </div>
+        </div>
+
+        <!-- EVENT LOOP WIDGET -->
+        <div class="el-widget" id="elWidget">
+          <div class="el-topbar">
+            <div class="ld ld-el"></div>
+            Event Loop — hozir nima qilmoqda?
+          </div>
+          <div class="el-body">
+            <div class="el-step" id="els-sync">
+              <div class="el-step-icon">📋</div>
+              <div class="el-step-label">Call Stack<br>tekshir</div>
+            </div>
+            <div class="el-arrow">→</div>
+            <div class="el-step" id="els-micro">
+              <div class="el-step-icon">⚡</div>
+              <div class="el-step-label">Microtask<br>Queue</div>
+            </div>
+            <div class="el-arrow">→</div>
+            <div class="el-step" id="els-macro">
+              <div class="el-step-icon">⏰</div>
+              <div class="el-step-label">Macrotask<br>Queue</div>
+            </div>
+            <div class="el-arrow">→</div>
+            <div class="el-step" id="els-render">
+              <div class="el-step-icon">🔄</div>
+              <div class="el-step-label">Render<br>(agar kerak)</div>
+            </div>
+            <div class="el-status" id="elStatus">// kutmoqda...</div>
+          </div>
+        </div>
+
+        <!-- CONSOLE OUTPUT -->
+        <div class="out-wrap">
+          <div class="out-topbar">
+            <svg width="11" height="11" viewBox="0 0 12 12" fill="none">
+              <circle cx="6" cy="6" r="5" stroke="#4B5270" stroke-width="1.5" />
+              <path d="M4 6l2 2 2-3" stroke="#4DD9A4" stroke-width="1.5" stroke-linecap="round"
+                stroke-linejoin="round" />
+            </svg>
+            Console Output
+          </div>
+          <div class="out-body" id="outBody">
+            <span style="color:#2E3450;font-size:10.5px;font-style:italic;font-family:'JetBrains Mono',monospace"
+              id="outEmpty">// bo'sh...</span>
+          </div>
+        </div>
+
+        <!-- STEP EXPLANATION -->
+        <div class="explain-box" id="explainBox">
+          Animatsiyani boshlash uchun <b>▶ Keyingi qadam</b> tugmasini bosing.<br>
+          <span style="font-size:11.5px;color:#3A4060">Har bir qadam Event Loop ning bir bosqichini ko'rsatadi.</span>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- BOTTOM: BATAFSIL TUSHUNTIRISH -->
+    <div class="detail-section">
+      <div class="detail-title">Har bir jarayon — batafsil tushuntirish</div>
+      <div class="detail-grid">
+
+        <!-- SINXRON -->
+        <div class="detail-card">
+          <div class="dc-head">
+            <div class="dc-num b-sync"
+              style="background:var(--sync-bg);color:var(--sync-fg);border:1px solid var(--sync-border)">1</div>
+            <div class="dc-title">Call Stack — Sinxron kod</div>
+            <div class="dc-type b-sync">Sinxron</div>
+          </div>
+          <div class="dc-body">
+            <b>Call Stack</b> (chaqiruvlar to'plami) — JavaScript ning asosiy ijro mexanizmi. Kod yuqoridan pastga,
+            ketma-ket bajariladi. Hech narsani kutmaydi, bloklamaydi.
+            <br><br>
+            <b>Qanday ishlaydi:</b> Har bir funksiya chaqirilganda stack ga "push" qilinadi. Funksiya tugagach "pop"
+            qilinadi. Stack bo'sh bo'lganda Event Loop ishga tushadi.
+            <br><br>
+            <b>Misol:</b> <code>console.log('1: Start')</code> → darhol chop etiladi.
+            <div class="note note-sync">⚡ Qoida: Sinxron kod har doim birinchi bajariladi. Hech bir asinxron jarayon
+              unga to'sqinlik qila olmaydi.</div>
+          </div>
+        </div>
+
+        <!-- WEB API -->
+        <div class="detail-card">
+          <div class="dc-head">
+            <div class="dc-num" style="background:var(--web-bg);color:var(--web-fg);border:1px solid var(--web-border)">
+              2</div>
+            <div class="dc-title">Web API — Brauzer xizmatlari</div>
+            <div class="dc-type b-web">Web API</div>
+          </div>
+          <div class="dc-body">
+            <b>Web API</b> — bu JavaScript tili emas, brauzer (yoki Node.js) tomonidan taqdim etilgan xizmatlar.
+            <code>setTimeout</code>, <code>fetch</code>, <code>DOM events</code> shular jumlasidan.
+            <br><br>
+            <b>Qanday ishlaydi:</b> <code>setTimeout(cb, 0)</code> chaqirilganda callback JS dan "olib chiqilib" Web API
+            ga beriladi. Brauzer timerni alohida hisoblaydi — JS to'xtamaydi! Timer tugagach callback Macrotask Queue ga
+            o'tadi.
+            <br><br>
+            <b>Muhim:</b> Hatto <code>setTimeout(fn, 0)</code> ham <b>darhol bajarilmaydi</b> — Macrotask Queue orqali
+            kutadi.
+            <div class="note note-web">🌐 Web API parallel ishlaydi — JS single-threaded, ammo brauzer multi-threaded.
+            </div>
+          </div>
+        </div>
+
+        <!-- MICROTASK QUEUE -->
+        <div class="detail-card">
+          <div class="dc-head">
+            <div class="dc-num"
+              style="background:var(--micro-bg);color:var(--micro-fg);border:1px solid var(--micro-border)">3</div>
+            <div class="dc-title">Microtask Queue — Yuqori ustuvorlik</div>
+            <div class="dc-type b-micro">Microtask</div>
+          </div>
+          <div class="dc-body">
+            <b>Microtask Queue</b> — eng yuqori ustuvorlikdagi asinxron navbat. <code>Promise.then()</code>,
+            <code>Promise.catch()</code>, <code>queueMicrotask()</code>, <code>async/await</code> shular orqali
+            to'ldiriladi.
+            <br><br>
+            <b>Qanday ishlaydi:</b> <code>Promise.resolve().then(cb)</code> → callback darhol (sinxron qismda) Microtask
+            Queue ga tushadi. Call Stack bo'shashi bilan <b>barcha</b> microtasklar birinchi navbatda bajariladi.
+            <br><br>
+            <b>Tartib:</b> Call Stack bo'shadi → <em>barcha</em> microtasklar → keyin bitta macrotask → yana
+            microtasklar (agar paydo bo'lsa).
+            <div class="note note-micro">⚡ Muhim: Agar microtask ichida yangi microtask hosil qilinsa, u ham shu "tur"da
+              bajariladi — makrotaskdan oldin!</div>
+          </div>
+        </div>
+
+        <!-- MACROTASK QUEUE -->
+        <div class="detail-card">
+          <div class="dc-head">
+            <div class="dc-num"
+              style="background:var(--macro-bg);color:var(--macro-fg);border:1px solid var(--macro-border)">4</div>
+            <div class="dc-title">Macrotask Queue — Standart navbat</div>
+            <div class="dc-type b-macro">Macrotask</div>
+          </div>
+          <div class="dc-body">
+            <b>Macrotask Queue</b> (Task Queue yoki Callback Queue ham deyiladi) — <code>setTimeout</code>,
+            <code>setInterval</code>, <code>I/O</code>, <code>click</code> kabi hodisalar shu yerga tushadi.
+            <br><br>
+            <b>Qanday ishlaydi:</b> Timer tugagach yoki hodisa bo'lgach, callback bu navbatga qo'shiladi. Event Loop har
+            safar Microtask Queue bo'shagandan keyingina bu yerdan <b>bitta</b> task oladi.
+            <br><br>
+            <b>Farqi:</b> Microtask dan farqli ravishda, har bir "Event Loop turida" faqat <b>bitta</b> macrotask
+            bajariladi, keyin yana microtasklar tekshiriladi.
+            <div class="note note-macro">⏰ setTimeout(fn, 0) aslida "imkon topilsa bajar" degani — hech qachon "darhol"
+              emas.</div>
+          </div>
+        </div>
+
+        <!-- EVENT LOOP -->
+        <div class="detail-card">
+          <div class="dc-head">
+            <div class="dc-num" style="background:var(--el-bg);color:var(--el-fg);border:1px solid var(--el-border)">5
+            </div>
+            <div class="dc-title">Event Loop — Bosh koordinator</div>
+            <div class="dc-type b-el">Event Loop</div>
+          </div>
+          <div class="dc-body">
+            <b>Event Loop</b> — JavaScript ning "yurak urishi". U doim ishlaydi va quyidagi tartibni takrorlaydi:
+            <br><br>
+            <b>1.</b> Call Stack bo'shmi? → Yo'q: kutadi. Ha: davom etadi.<br>
+            <b>2.</b> Microtask Queue bo'shmi? → Yo'q: barcha microtasklar bajariladi.<br>
+            <b>3.</b> Macrotask Queue bo'shmi? → Yo'q: bitta macrotask bajariladi.<br>
+            <b>4.</b> Render kerakmi? → Ha: sahifa yangilanadi.<br>
+            <b>5.</b> 1-qadam dan takrorlanadi.
+            <div class="note note-el">🔄 Bu sikl to'xtamaydi — brauzer yopilguncha yoki skript tugaguncha davom etadi.
+              Shuning uchun JS "bloklanmaydi".</div>
+          </div>
+        </div>
+
+        <!-- YAKUNIY TARTIB -->
+        <div class="detail-card">
+          <div class="dc-head">
+            <div class="dc-num" style="background:#1A1F35;color:#E8EAF2;border:1px solid #303650">6</div>
+            <div class="dc-title">Yakuniy chiqish tartibi — Nima uchun?</div>
+            <div class="dc-type" style="background:#1A1F35;color:#E8EAF2;border:1px solid #303650">Natija</div>
+          </div>
+          <div class="dc-body">
+            <b>Ushbu kodning chiqishi:</b>
+            <br><br>
+            <code>1: Start</code> → <code>2: Middle</code> → <code>3: End</code> (sinxron)<br>
+            → <code>4: micro1</code> → <code>5: micro2</code> → <code>6: micro3</code> (microtask)<br>
+            → <code>7: timeout1</code> → <code>8: timeout2</code> → <code>9: timeout3</code> (macrotask)
+            <br><br>
+            <b>Nima uchun shunday?</b> Sinxron kod to'liq tugaydi → Microtask Queue butunlay bo'shatiladi → Keyin
+            Macrotask Queue dan bittadan olinadi.
+            <div class="note"
+              style="background:rgba(168,158,255,0.05);border-color:#A89EFF;border-left:3px solid #A89EFF;color:#A89EFF">
+              💡 Asosiy qoida: <b>Sinxron &gt; Microtask &gt; Macrotask</b>. Buni yodda saqlasang, Event Loop sir
+              bo'lmaydi!
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <footer>© 2024 · JS Event Loop Vizualizator v4 · JetBrains Mono + Syne</footer>
+  </div>
+
+  <script>
+    const STEPS = [
+      {
+        lines: [1], callAdd: [{ label: 'main()', cls: 'c-sync' }, { label: 'console.log', cls: 'c-sync' }],
+        callRm: [], webAdd: [], webRm: [], microAdd: [], microRm: [], macroAdd: [], macroRm: [],
+        out: [{ t: '1: Start', cls: 'c-sync' }], hl: { boxCallStack: 'hl-sync' }, type: 'sync',
+        elStep: 'sync', elStatus: "📋 Sinxron kod bajarilmoqda...",
+        explain: '<b>Qadam 1 — Sinxron #1:</b> <code>console.log(\'1: Start\')</code> <b>Call Stack</b> ga tushadi va <em>darhol</em> bajariladi. Event Loop hali kerak emas — sinxron kod to\'g\'ridan-to\'g\'ri bajariladi.'
+      },
+      {
+        lines: [3], callAdd: [{ label: 'setTimeout(0ms)', cls: 'c-sync' }],
+        callRm: ['console.log'], webAdd: [{ label: 'timeout1 cb', cls: 'c-web', timer: true }],
+        webRm: [], microAdd: [], microRm: [], macroAdd: [], macroRm: [],
+        out: [], hl: { boxCallStack: 'hl-sync', boxWebAPI: 'hl-web' }, type: 'webapi',
+        elStep: 'sync', elStatus: "🌐 Web API ga topshirilyapti...",
+        explain: '<b>Qadam 2 — Macrotask #1 ro\'yxatga olindi:</b> <code>setTimeout(0ms)</code> Web API ga yuborildi. Callback <em>hozir emas</em> — timer tugagach Macrotask Queue ga boradi. JS to\'xtamaydi!'
+      },
+      {
+        lines: [4], callAdd: [{ label: 'setTimeout(100ms)', cls: 'c-sync' }],
+        callRm: ['setTimeout(0ms)'], webAdd: [{ label: 'timeout2 cb', cls: 'c-web' }],
+        webRm: [], microAdd: [], microRm: [], macroAdd: [], macroRm: [],
+        out: [], hl: { boxCallStack: 'hl-sync', boxWebAPI: 'hl-web' }, type: 'webapi',
+        elStep: 'sync', elStatus: "🌐 Web API ga topshirilyapti...",
+        explain: '<b>Qadam 3 — Macrotask #2 ro\'yxatga olindi:</b> <code>setTimeout(100ms)</code> ham Web API ga o\'tdi. Ikkala timer <b>parallel</b> hisoblanyapti — JS ularni kutmaydi.'
+      },
+      {
+        lines: [5], callAdd: [{ label: 'setTimeout(200ms)', cls: 'c-sync' }],
+        callRm: ['setTimeout(100ms)'], webAdd: [{ label: 'timeout3 cb', cls: 'c-web' }],
+        webRm: [], microAdd: [], microRm: [], macroAdd: [], macroRm: [],
+        out: [], hl: { boxCallStack: 'hl-sync', boxWebAPI: 'hl-web' }, type: 'webapi',
+        elStep: 'sync', elStatus: "🌐 Web API ga topshirilyapti...",
+        explain: '<b>Qadam 4 — Macrotask #3 ro\'yxatga olindi:</b> <code>setTimeout(200ms)</code> — uchinchi timer. Endi Web API da 3 ta timer kutmoqda. Sinxron kod hali davom etadi.'
+      },
+      {
+        lines: [7], callAdd: [{ label: 'Promise.resolve()', cls: 'c-sync' }],
+        callRm: ['setTimeout(200ms)'], webAdd: [], webRm: [],
+        microAdd: [{ label: 'micro1 cb', cls: 'c-micro' }], microRm: [], macroAdd: [], macroRm: [],
+        out: [], hl: { boxCallStack: 'hl-sync', boxMicroQ: 'hl-micro' }, type: 'micro',
+        elStep: 'sync', elStatus: "⚡ Microtask Queue ga qo'shilmoqda...",
+        explain: '<b>Qadam 5 — Microtask #1 navbatga qo\'shildi:</b> <code>Promise.resolve().then(cb)</code> — Promise darhol resolve bo\'ladi. Callback Web API orqali emas, <b>to\'g\'ridan-to\'g\'ri</b> Microtask Queue ga tushadi.'
+      },
+      {
+        lines: [8], callAdd: [{ label: 'Promise.resolve()', cls: 'c-sync' }],
+        callRm: ['Promise.resolve()'], webAdd: [], webRm: [],
+        microAdd: [{ label: 'micro2 cb', cls: 'c-micro' }], microRm: [], macroAdd: [], macroRm: [],
+        out: [], hl: { boxCallStack: 'hl-sync', boxMicroQ: 'hl-micro' }, type: 'micro',
+        elStep: 'sync', elStatus: "⚡ Microtask Queue ga qo'shilmoqda...",
+        explain: '<b>Qadam 6 — Microtask #2 navbatga qo\'shildi:</b> Ikkinchi <code>Promise.resolve().then()</code> ham darhol Microtask Queue ga o\'z callbackini qo\'shdi. Endi navbatda 2 ta microtask bor.'
+      },
+      {
+        lines: [9], callAdd: [{ label: 'Promise.resolve()', cls: 'c-sync' }],
+        callRm: ['Promise.resolve()'], webAdd: [], webRm: [],
+        microAdd: [{ label: 'micro3 cb', cls: 'c-micro' }], microRm: [], macroAdd: [], macroRm: [],
+        out: [], hl: { boxCallStack: 'hl-sync', boxMicroQ: 'hl-micro' }, type: 'micro',
+        elStep: 'sync', elStatus: "⚡ Microtask Queue ga qo'shilmoqda...",
+        explain: '<b>Qadam 7 — Microtask #3 navbatga qo\'shildi:</b> Uchinchi Promise ham queue ga tushdi. Microtask Queue da endi 3 ta callback bor — barchasi sinxron skript tugashini sabr bilan kutmoqda.'
+      },
+      {
+        lines: [11], callAdd: [{ label: 'console.log', cls: 'c-sync' }],
+        callRm: ['Promise.resolve()'], webAdd: [], webRm: [], microAdd: [], microRm: [], macroAdd: [], macroRm: [],
+        out: [{ t: '2: Middle', cls: 'c-sync' }], hl: { boxCallStack: 'hl-sync' }, type: 'sync',
+        elStep: 'sync', elStatus: "📋 Sinxron kod bajarilmoqda...",
+        explain: '<b>Qadam 8 — Sinxron #2:</b> <code>console.log(\'2: Middle\')</code> bajariladi. Sinxron kod to\'xtovsiz davom etadi — microtask yoki macrotask lar navbat kutmoqda, lekin hozir ular bajarilmaydi.'
+      },
+      {
+        lines: [12], callAdd: [{ label: 'console.log', cls: 'c-sync' }],
+        callRm: ['console.log'], webAdd: [], webRm: [], microAdd: [], microRm: [], macroAdd: [], macroRm: [],
+        out: [{ t: '3: End', cls: 'c-sync' }], hl: { boxCallStack: 'hl-sync' }, type: 'sync',
+        elStep: 'sync', elStatus: "📋 Sinxron kod tugaydi...",
+        explain: '<b>Qadam 9 — Sinxron #3:</b> <code>console.log(\'3: End\')</code> — asosiy skriptning so\'nggi satri. Call Stack bo\'shaydi. Endi Event Loop nazoratni o\'z qo\'liga oladi!'
+      },
+      {
+        lines: [], callAdd: [], callRm: ['console.log', 'main()'],
+        webAdd: [], webRm: [], microAdd: [], microRm: [], macroAdd: [], macroRm: [],
+        out: [], hl: {}, type: 'sync',
+        elStep: 'check', elStatus: "🔄 Call Stack bo'shadi — tekshirish...",
+        explain: '<b>Qadam 10 — Call Stack bo\'shadi:</b> Event Loop ishga tushadi va tekshiradi: <br>1) Call Stack bo\'shmi? ✅ Ha.<br>2) Microtask Queue bo\'shmi? ❌ 3 ta kutmoqda!<br>→ Barcha microtasklar birinchi bajariladi.'
+      },
+      {
+        lines: [7], callAdd: [{ label: 'micro1 cb', cls: 'c-micro' }], callRm: [],
+        webAdd: [], webRm: [], microAdd: [], microRm: ['micro1 cb'], macroAdd: [], macroRm: [],
+        out: [{ t: '4: micro1', cls: 'c-micro' }], hl: { boxCallStack: 'hl-micro', boxMicroQ: 'hl-micro' }, type: 'micro',
+        elStep: 'micro', elStatus: "⚡ Microtask #1 bajarilmoqda...",
+        explain: '<b>Qadam 11 — Microtask #1:</b> <code>micro1 cb</code> Microtask Queue dan olinib Call Stack ga o\'tdi va bajarildi. Macrotask lar hali ham sabr bilan kutmoqda — <b>microtasklar birinchi!</b>'
+      },
+      {
+        lines: [8], callAdd: [{ label: 'micro2 cb', cls: 'c-micro' }], callRm: ['micro1 cb'],
+        webAdd: [], webRm: [], microAdd: [], microRm: ['micro2 cb'], macroAdd: [], macroRm: [],
+        out: [{ t: '5: micro2', cls: 'c-micro' }], hl: { boxCallStack: 'hl-micro', boxMicroQ: 'hl-micro' }, type: 'micro',
+        elStep: 'micro', elStatus: "⚡ Microtask #2 bajarilmoqda...",
+        explain: '<b>Qadam 12 — Microtask #2:</b> Microtask Queue bo\'shatilishda davom etadi. Event Loop quyidagi qoidaga rioya qiladi: <b>barcha microtasklar tugamaguncha macrotask ga o\'tma.</b>'
+      },
+      {
+        lines: [9], callAdd: [{ label: 'micro3 cb', cls: 'c-micro' }], callRm: ['micro2 cb'],
+        webAdd: [], webRm: [], microAdd: [], microRm: ['micro3 cb'], macroAdd: [], macroRm: [],
+        out: [{ t: '6: micro3', cls: 'c-micro' }], hl: { boxCallStack: 'hl-micro', boxMicroQ: 'hl-micro' }, type: 'micro',
+        elStep: 'micro', elStatus: "⚡ Microtask #3 bajarilmoqda...",
+        explain: '<b>Qadam 13 — Microtask #3:</b> Microtask Queue to\'liq bo\'shadi! Endi Event Loop Macrotask Queue ga murojaat qilishi mumkin. <code>timeout1</code> navbati keldi!'
+      },
+      {
+        lines: [3], callAdd: [{ label: 'timeout1 cb', cls: 'c-macro' }], callRm: ['micro3 cb'],
+        webAdd: [], webRm: ['timeout1 cb', 'timeout2 cb', 'timeout3 cb'],
+        macroAdd: [{ label: 'timeout2 cb', cls: 'c-macro' }, { label: 'timeout3 cb', cls: 'c-macro' }],
+        macroRm: ['timeout1 cb'], microAdd: [], microRm: [],
+        out: [{ t: '7: timeout1', cls: 'c-macro' }], hl: { boxCallStack: 'hl-macro', boxMacroQ: 'hl-macro', boxWebAPI: 'hl-web' }, type: 'macro',
+        elStep: 'macro', elStatus: "⏰ Macrotask #1 bajarilmoqda...",
+        explain: '<b>Qadam 14 — Macrotask #1:</b> Barcha timerlar tugadi — Web API dan chiqib Macrotask Queue ga o\'tdi. Event Loop birinchi macrotask <code>timeout1</code> ni bajaradi. Har bir "tur"da faqat bitta macrotask!'
+      },
+      {
+        lines: [4], callAdd: [{ label: 'timeout2 cb', cls: 'c-macro' }], callRm: ['timeout1 cb'],
+        webAdd: [], webRm: [], microAdd: [], microRm: [], macroAdd: [], macroRm: ['timeout2 cb'],
+        out: [{ t: '8: timeout2', cls: 'c-macro' }], hl: { boxCallStack: 'hl-macro', boxMacroQ: 'hl-macro' }, type: 'macro',
+        elStep: 'macro', elStatus: "⏰ Macrotask #2 bajarilmoqda...",
+        explain: '<b>Qadam 15 — Macrotask #2:</b> Microtask Queue bo\'sh → Event Loop ikkinchi macrotask ni oladi. Har bir macrotask dan keyin Microtask Queue tekshiriladi (bu safar bo\'sh edi).'
+      },
+      {
+        lines: [5], callAdd: [{ label: 'timeout3 cb', cls: 'c-macro' }], callRm: ['timeout2 cb'],
+        webAdd: [], webRm: [], microAdd: [], microRm: [], macroAdd: [], macroRm: ['timeout3 cb'],
+        out: [{ t: '9: timeout3', cls: 'c-macro' }], hl: { boxCallStack: 'hl-macro', boxMacroQ: 'hl-macro' }, type: 'macro',
+        elStep: 'macro', elStatus: "⏰ Macrotask #3 — oxirgi!",
+        explain: '<b>Qadam 16 — Macrotask #3:</b> So\'nggi macrotask bajarildi! ✅ <b>Yakuniy tartib:</b> 1→2→3 (sinxron) → 4→5→6 (microtask) → 7→8→9 (macrotask).<br><span style="font-size:11px;color:#4A5070">Sinxron → Microtasklar → Macrotasklar (birma-bir)</span>'
+      }
+    ];
+
+    const TOTAL = STEPS.length;
+    let step = -1;
+
+    function spd() { return parseInt(document.getElementById('spd').value); }
+
+    function setExplain(html, type) {
+      const el = document.getElementById('explainBox');
+      el.innerHTML = html;
+      el.className = 'explain-box ' + (type || '');
+    }
+
+    function setEventLoopState(elStep, elStatus) {
+      ['els-sync', 'els-micro', 'els-macro', 'els-render'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.className = 'el-step';
+      });
+      const map = {
+        'sync': 'els-sync',
+        'check': 'els-sync',
+        'micro': 'els-micro',
+        'macro': 'els-macro',
+        'render': 'els-render'
+      };
+      const target = map[elStep];
+      if (target) {
+        const el = document.getElementById(target);
+        if (el) el.className = 'el-step active';
+      }
+      const statusEl = document.getElementById('elStatus');
+      if (statusEl && elStatus) statusEl.textContent = elStatus;
+    }
+
+    function highlightLines(lineIds, type) {
+      document.querySelectorAll('.cl').forEach(el => el.classList.remove('a-sync', 'a-micro', 'a-macro', 'a-web', 'faded'));
+      if (!lineIds || !lineIds.length) return;
+      document.querySelectorAll('.cl').forEach(el => el.classList.add('faded'));
+      lineIds.forEach(id => {
+        const el = document.getElementById('l' + id);
+        if (!el) return;
+        el.classList.remove('faded');
+        if (type === 'micro') el.classList.add('a-micro');
+        else if (type === 'macro') el.classList.add('a-macro');
+        else if (type === 'webapi') el.classList.add('a-web');
+        else el.classList.add('a-sync');
+      });
+    }
+
+    function highlightBoxes(map) {
+      ['boxCallStack', 'boxWebAPI', 'boxMicroQ', 'boxMacroQ'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.className = 'box' + (map[id] ? ' ' + map[id] : '');
+      });
+    }
+
+    function addChip(containerId, item) {
+      const el = document.getElementById(containerId);
+      if (!el) return;
+      const d = document.createElement('div');
+      d.className = 'chip entering ' + (item.cls || 'c-sync');
+      d.setAttribute('data-label', item.label);
+      d.textContent = item.label;
+      if (item.timer) {
+        const bar = document.createElement('div');
+        bar.className = 'timer-bar';
+        d.appendChild(bar);
+        setTimeout(() => { bar.style.transition = 'width 1.4s linear'; bar.style.width = '0%'; }, 80);
+      }
+      if (containerId === 'callStack') el.insertBefore(d, el.firstChild);
+      else el.appendChild(d);
+    }
+
+    function removeChip(containerId, labelStart) {
+      const el = document.getElementById(containerId);
+      if (!el) return;
+      const chips = el.querySelectorAll('.chip');
+      for (const c of chips) {
+        const lbl = c.getAttribute('data-label') || c.textContent;
+        if (lbl.trim().startsWith(labelStart.trim().substring(0, 10))) {
+          c.classList.add('exiting');
+          setTimeout(() => c.remove(), 280);
+          return;
+        }
+      }
+    }
+
+    function addOutput(items) {
+      if (!items || !items.length) return;
+      const el = document.getElementById('outBody');
+      const empty = document.getElementById('outEmpty');
+      if (empty) empty.remove();
+      items.forEach(item => {
+        const d = document.createElement('span');
+        d.className = 'out-chip ' + (item.cls || 'c-sync');
+        d.textContent = '> ' + item.t;
+        el.appendChild(d);
+      });
+    }
+
+    function nextStep() {
+      if (step >= TOTAL - 1) return;
+      step++;
+      const s = STEPS[step];
+
+      highlightLines(s.lines, s.type);
+      highlightBoxes(s.hl || {});
+      setEventLoopState(s.elStep, s.elStatus);
+
+      (s.callAdd || []).forEach(item => addChip('callStack', item));
+      (s.webAdd || []).forEach(item => addChip('webAPI', item));
+      (s.microAdd || []).forEach(item => addChip('microQ', item));
+      (s.macroAdd || []).forEach(item => addChip('macroQ', item));
+
+      setTimeout(() => {
+        (s.callRm || []).forEach(n => removeChip('callStack', n));
+        (s.webRm || []).forEach(n => removeChip('webAPI', n));
+        (s.microRm || []).forEach(n => removeChip('microQ', n));
+        (s.macroRm || []).forEach(n => removeChip('macroQ', n));
+        if (s.out && s.out.length) addOutput(s.out);
+      }, spd() * 0.4);
+
+      setExplain(s.explain, s.type);
+
+      const pct = ((step + 1) / TOTAL * 100).toFixed(1);
+      document.getElementById('progressBar').style.width = pct + '%';
+      document.getElementById('sc').textContent = (step + 1) + ' / ' + TOTAL;
+      document.getElementById('nextBtn').disabled = step >= TOTAL - 1;
+    }
+
+    function resetAll() {
+      step = -1;
+      ['callStack', 'webAPI', 'microQ', 'macroQ'].forEach(id => { const e = document.getElementById(id); if (e) e.innerHTML = ''; });
+      document.getElementById('outBody').innerHTML = '<span style="color:#2E3450;font-size:10.5px;font-style:italic;font-family:\'JetBrains Mono\',monospace" id="outEmpty">// bo\'sh...</span>';
+      document.querySelectorAll('.cl').forEach(el => { el.className = 'cl'; });
+      highlightBoxes({});
+      ['els-sync', 'els-micro', 'els-macro', 'els-render'].forEach(id => { const e = document.getElementById(id); if (e) e.className = 'el-step'; });
+      document.getElementById('elStatus').textContent = '// kutmoqda...';
+      setExplain('Animatsiyani boshlash uchun <b>▶ Keyingi qadam</b> tugmasini bosing.<br><span style="font-size:11.5px;color:#3A4060">Har bir qadam Event Loop ning bir bosqichini ko\'rsatadi.</span>', '');
+      document.getElementById('progressBar').style.width = '0%';
+      document.getElementById('sc').textContent = '0 / ' + TOTAL;
+      document.getElementById('nextBtn').disabled = false;
+    }
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,21 @@
+
+
+.rasm{
+  width: 50%;
+}
+
+.kino{
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  gap: 10px;
+  margin: 10px;
+  border: 1px solid #000;
+  border-radius: 3px;
+  padding: 10px;
+}
+
+.kinolar{
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}

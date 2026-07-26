@@ -1,0 +1,27 @@
+img{
+  width: 100px;
+}
+
+.kino{
+  background-color: bisque;
+  padding: 10px;
+  border-radius: 5px;
+
+  border: 1px solid #000;
+  margin: 5px;
+
+;
+
+
+
+}
+
+.btn_ochirish{
+  background-color: rgb(230, 138, 33);
+  border: none;
+  padding: 5px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  visibility: hidden;
+
+}

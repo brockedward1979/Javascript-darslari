@@ -1,0 +1,95 @@
+body {
+	font-family: "Segoe UI", sans-serif;
+	background: #f4f7f9;
+	display: flex;
+	justify-content: center;
+	padding-top: 40px;
+}
+
+.app-container {
+	background: white;
+	padding: 25px;
+	border-radius: 15px;
+	width: 450px;
+	box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.block {
+	padding: 20px;
+	border-radius: 10px;
+	margin: 10px 0;
+	border: 1px solid #e0e0e0;
+}
+
+.super-admin-block {
+	background: #e3f2fd;
+	border-left: 5px solid #2196f3;
+}
+
+.user-block {
+	background: #ffffff;
+	border-left: 5px solid #777;
+}
+
+.badge {
+	padding: 3px 10px;
+	background: #bbb;
+	color: white;
+	border-radius: 12px;
+	font-size: 13px;
+	text-transform: uppercase;
+}
+
+.admin-badge-active {
+	background: #ff4757 !important;
+	font-weight: bold;
+}
+
+button {
+	cursor: pointer;
+	padding: 8px 16px;
+	border-radius: 6px;
+	border: 1px solid #ddd;
+	transition: 0.3s;
+}
+
+#promote-btn {
+	background: #2196f3;
+	color: white;
+	border: none;
+}
+
+#promote-btn:hover {
+	background: #1976d2;
+}
+
+.del-btn {
+	background: #ff4757;
+	color: white;
+	border: none;
+	font-size: 11px;
+	display: none; /* Dastlab yashirin */
+}
+
+.del-btn:hover {
+	background: #ff6b81;
+}
+
+ul {
+	padding: 0;
+}
+
+li {
+	list-style: none;
+	padding: 10px;
+	border-bottom: 1px solid #f0f0f0;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.divider {
+	border: none;
+	border-top: 2px dashed #ddd;
+	margin: 20px 0;
+}

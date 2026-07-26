@@ -1,0 +1,21 @@
+
+
+.meva{
+  background-color: #2cb476;
+}
+
+
+button{
+  border: none;
+  padding: 5px 15px;
+  border-radius: 5px;
+  color: rgb(230, 225, 228);
+
+  cursor: pointer;
+}
+
+.hodisa{
+  background-color: orangered;
+
+}
+

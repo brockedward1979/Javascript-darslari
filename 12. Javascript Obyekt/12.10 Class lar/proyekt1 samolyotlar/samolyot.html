@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="uz">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Aviatsiya Xarajati Kalkulyatori</title>
+		<link rel="stylesheet" href="samolyot.css" />
+	</head>
+	<body>
+		<div class="header">
+			<h1>Aviatsiya Yoqilg'i Xarajati Kalkulyatori</h1>
+			<p>Haqiqiy samolyotlar va ularning real texnik ko'rsatkichlari asosida</p>
+
+			<div class="control-panel">
+				<label for="distance">Uchish masofasini kiriting (km):</label>
+				<input type="number" id="distance" value="1000" min="1" step="100" />
+				<span class="info-text">Yoqilg'i narxi (o'rtacha): 12,500 so'm/litr</span>
+			</div>
+		</div>
+
+		<div class="container">
+			<div class="plane-grid" id="plane-grid"></div>
+		</div>
+
+		<script src="samolyot.js"></script>
+	</body>
+</html>

@@ -42,8 +42,17 @@
 // 4. qiyinchilik_darajasi: o'yin qiyinchilik darajasi (null bo'lishi mumkin).
 // Agar foydalanuvchi ovozni 0 ga o'rnatgan bo'lsa, ismini bo'sh qoldirgan bo'lsa yoki qiyinchilik darajasini tanlamagan bo'lsa, standart qiymatlarni belgilash kerak.
 
-let gaplari = "a";
+// let gaplari = "a";
 
-let gaplashuvchilar = gaplari ?? "Gaplashuvchilar mavjud emas";
+// let gaplashuvchilar = gaplari ?? "Gaplashuvchilar mavjud emas";
 
-console.log(gaplashuvchilar);
+// console.log(gaplashuvchilar);
+
+
+// default qiymatda || da 0, "", null, undefined, 0n, ...
+
+// nullish faqat null va undefined qiymatlar uchun o'ng tarafdagi qiymatni qabul qiladi.
+
+
+
+

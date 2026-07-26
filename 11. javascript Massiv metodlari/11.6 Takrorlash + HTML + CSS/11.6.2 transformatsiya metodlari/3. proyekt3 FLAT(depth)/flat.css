@@ -1,0 +1,23 @@
+.jadval{
+    width: 100%;
+    border-collapse: collapse;
+    border: 1px solid #000;
+    margin-top: 20px;
+}
+
+.jadval th, .jadval td{
+    border: 1px solid #000;
+    padding: 8px;
+    text-align: left;
+}
+
+.jadval tr:nth-child(even) {
+    background-color: #fae6e6;
+}
+
+body{
+    font-family: Arial, sans-serif;
+    margin: 20px;
+    background-color: aquamarine;
+    padding: 20px;
+}

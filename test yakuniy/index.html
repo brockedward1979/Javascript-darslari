@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="uz">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Modulli JS Test Platformasi</title>
+		<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+		<style>
+			.custom-shadow {
+				box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.08);
+			}
+		</style>
+	</head>
+	<body class="bg-slate-50 text-slate-800 font-sans antialiased">
+		<div class="max-w-3xl mx-auto px-4 py-8">
+			<header class="text-center mb-8">
+				<h1 class="text-3xl font-extrabold text-indigo-600 tracking-tight">JavaScript Bilim Testi</h1>
+				<p class="text-slate-500 mt-2">Yo'naltirilgan va modulli o'quv-test platformasi</p>
+			</header>
+
+			<div id="menu-box" class="bg-white rounded-2xl p-6 md:p-8 custom-shadow border border-slate-100">
+				<h3 class="text-xl font-bold text-slate-900 mb-2">Test topshirish rejimini tanlang:</h3>
+				<p class="text-sm text-slate-500 mb-6">O'zingizga kerakli bo'lgan blokni tanlang yoki barcha mavzular bo'yicha bilimingizni sinang.</p>
+
+				<div id="menu-options" class="space-y-3"></div>
+			</div>
+
+			<div id="quiz-box" class="hidden bg-white rounded-2xl p-6 md:p-8 custom-shadow border border-slate-100">
+				<div class="flex justify-between items-center mb-4">
+					<span id="question-counter" class="text-sm font-semibold bg-indigo-50 text-indigo-700 px-3 py-1 rounded-full"> Savol: 1/10 </span>
+					<span id="topic-badge" class="text-xs font-bold text-indigo-500 uppercase tracking-wider bg-slate-100 px-2.5 py-1 rounded-md"> Mavzu </span>
+				</div>
+
+				<div class="mb-4">
+					<p class="text-xs text-slate-400 font-medium">Joriy Blok:</p>
+					<h4 id="section-badge" class="text-md font-bold text-slate-700">Bo'lim nomi</h4>
+				</div>
+
+				<div class="w-full bg-slate-100 rounded-full h-2 mb-6">
+					<div id="progress-bar" class="bg-indigo-600 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+				</div>
+
+				<div class="mb-6">
+					<h2 id="question-text" class="text-lg md:text-xl font-bold text-slate-900 whitespace-pre-line">Savol yuklanmoqda...</h2>
+				</div>
+
+				<div id="options-container" class="space-y-3"></div>
+
+				<div class="mt-8 pt-4 border-t border-slate-100 flex justify-between items-center">
+					<button
+						id="prev-btn"
+						class="bg-slate-100 hover:bg-slate-200 text-slate-600 font-medium px-4 py-2 rounded-xl transition duration-150 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed">
+						&larr; Orqaga
+					</button>
+
+					<button id="skip-btn" class="bg-amber-50 hover:bg-amber-100 text-amber-700 font-medium px-4 py-2 rounded-xl transition duration-150 cursor-pointer">O'tkazib yuborish &rarr;</button>
+				</div>
+			</div>
+
+			<div id="result-box" class="hidden bg-white rounded-2xl p-6 md:p-8 custom-shadow border border-slate-100">
+				<div class="text-center mb-6">
+					<div class="w-16 h-16 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-3 text-2xl">📊</div>
+					<h2 class="text-2xl font-bold text-slate-900">Sizning Natijangiz</h2>
+					<p id="result-welcome-msg" class="text-slate-500 mt-1">Test yakunlari bo'yicha tahlil</p>
+				</div>
+
+				<div id="section-results-container" class="space-y-4 mb-6"></div>
+
+				<div class="border-t border-slate-100 pt-6 flex flex-col sm:flex-row gap-3 justify-center">
+					<button onclick="backToMenu()" class="bg-slate-900 hover:bg-slate-800 text-white font-medium px-6 py-3 rounded-xl transition duration-150 cursor-pointer text-center">
+						Bosh menyuga qaytish
+					</button>
+					<button onclick="restartCurrentQuiz()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-6 py-3 rounded-xl transition duration-150 cursor-pointer text-center">
+						Shu testni qayta topshirish
+					</button>
+				</div>
+			</div>
+		</div>
+
+		<script src="savollar.js"></script>
+
+		<script>
+			let joriyIndex = 0;
+			let joriyAktivSavollar = []; // Tanlangan rejimga qarab filtrlanadigan savollar to'plami
+			let userAnswers = [];
+			let tanlanganRejim = "all"; // "all" yoki aniq bo'lim nomi
+
+			// DOM elementlar
+			const menuBox = document.getElementById("menu-box");
+			const quizBox = document.getElementById("quiz-box");
+			const resultBox = document.getElementById("result-box");
+			const menuOptions = document.getElementById("menu-options");
+
+			const questionCounter = document.getElementById("question-counter");
+			const topicBadge = document.getElementById("topic-badge");
+			const sectionBadge = document.getElementById("section-badge");
+			const progressBar = document.getElementById("progress-bar");
+			const questionText = document.getElementById("question-text");
+			const optionsContainer = document.getElementById("options-container");
+			const prevBtn = document.getElementById("prev-btn");
+			const skipBtn = document.getElementById("skip-btn");
+			const sectionResultsContainer = document.getElementById("section-results-container");
+
+			// Dastlabki yuklanish
+			window.onload = function () {
+				if (typeof testSavollari === "undefined" || testSavollari.length === 0) {
+					alert("Xato: savollar.js fayli topilmadi yoki bo'sh!");
+					return;
+				}
+				renderMenu();
+			};
+
+			// Menyuni shakllantirish
+			function renderMenu() {
+				menuOptions.innerHTML = "";
+
+				// Barcha unikal bo'limlarni yig'ib olish
+				const bolimlar = [...new Set(testSavollari.map((q) => q.bolim))];
+
+				// 1. "Barcha bo'limlar aralash" tugmasi
+				const allButton = document.createElement("button");
+				allButton.className =
+					"w-full text-left p-4 rounded-xl border-2 border-indigo-100 bg-indigo-50/50 hover:bg-indigo-50 text-slate-800 font-bold transition duration-150 flex justify-between items-center cursor-pointer";
+				allButton.innerHTML = `
+        <span>🔄 Barcha bloklar aralash test</span>
+        <span class="text-xs bg-indigo-600 text-white px-2.5 py-1 rounded-md">${testSavollari.length} ta savol</span>
+      `;
+				allButton.onclick = () => startQuiz("all");
+				menuOptions.appendChild(allButton);
+
+				// 2. Har bir alohida bo'lim uchun tugmalar
+				bolimlar.forEach((bolimNami) => {
+					const soni = testSavollari.filter((q) => q.bolim === bolimNami).length;
+					const btn = document.createElement("button");
+					btn.className =
+						"w-full text-left p-4 rounded-xl border border-slate-200 hover:bg-slate-50 hover:border-indigo-300 text-slate-700 font-medium transition duration-150 flex justify-between items-center cursor-pointer";
+					btn.innerHTML = `
+          <span>📁 ${bolimNami}</span>
+          <span class="text-xs bg-slate-200 text-slate-600 px-2.5 py-1 rounded-md font-bold">${soni} ta savol</span>
+        `;
+					btn.onclick = () => startQuiz(bolimNami);
+					menuOptions.appendChild(btn);
+				});
+			}
+
+			// Tanlangan rejim bo'yicha testni boshlash
+			function startQuiz(rejim) {
+				tanlanganRejim = rejim;
+				joriyIndex = 0;
+
+				// Savollarni filtrlaymiz
+				if (rejim === "all") {
+					joriyAktivSavollar = [...testSavollari];
+				} else {
+					joriyAktivSavollar = testSavollari.filter((q) => q.bolim === rejim);
+				}
+
+				// Foydalanuvchi javoblari xotirasini tozalash/tayyorlash
+				userAnswers = joriyAktivSavollar.map((q) => ({
+					savolId: q.id,
+					tanlanganIndex: null,
+					status: "otkazilgan",
+				}));
+
+				// Ekranlarni almashtirish
+				menuBox.classList.add("hidden");
+				resultBox.classList.add("hidden");
+				quizBox.classList.remove("hidden");
+
+				renderQuestion();
+			}
+
+			// Savolni ekranga chizish
+			function renderQuestion() {
+				const joriySavol = joriyAktivSavollar[joriyIndex];
+
+				// Tugmalar va hisoblagichlar
+				prevBtn.disabled = joriyIndex === 0;
+				questionCounter.innerText = `Savol: ${joriyIndex + 1}/${joriyAktivSavollar.length}`;
+				topicBadge.innerText = joriySavol.mavzu;
+				sectionBadge.innerText = joriySavol.bolim;
+
+				// Progress paneli
+				const progressFoiz = (joriyIndex / joriyAktivSavollar.length) * 100;
+				progressBar.style.width = `${progressFoiz}%`;
+
+				questionText.innerText = joriySavol.savol;
+				optionsContainer.innerHTML = "";
+
+				// Variant tugmalarini yaratish
+				joriySavol.variantlar.forEach((variant, index) => {
+					const button = document.createElement("button");
+					button.className = "w-full text-left p-4 rounded-xl border transition duration-150 flex items-center justify-between cursor-pointer focus:outline-none ";
+
+					if (userAnswers[joriyIndex].tanlanganIndex === index) {
+						button.className += "border-indigo-600 bg-indigo-50 text-indigo-900 font-semibold";
+					} else {
+						button.className += "border-slate-200 hover:bg-slate-50 hover:border-slate-300 text-slate-700";
+					}
+
+					button.innerHTML = `
+          <span class="text-sm md:text-base">${variant}</span>
+          <div class="w-5 h-5 border-2 rounded-full flex items-center justify-center flex-shrink-0 ml-4 ${userAnswers[joriyIndex].tanlanganIndex === index ? "border-indigo-600" : "border-slate-300"}">
+            <div class="w-2.5 h-2.5 bg-indigo-600 rounded-full ${userAnswers[joriyIndex].tanlanganIndex === index ? "" : "hidden"}"></div>
+          </div>
+        `;
+
+					button.onclick = () => handleAnswer(index);
+					optionsContainer.appendChild(button);
+				});
+			}
+
+			// Variant bosilganda
+			function handleAnswer(variantIndex) {
+				const joriySavol = joriyAktivSavollar[joriyIndex];
+
+				userAnswers[joriyIndex].tanlanganIndex = variantIndex;
+				userAnswers[joriyIndex].status = variantIndex === joriySavol.togriJavob ? "togri" : "notogri";
+
+				// 150ms animatsiya effekti uchun kechikish bilan o'tish
+				setTimeout(() => {
+					nextQuestion();
+				}, 150);
+			}
+
+			// Navigatsiya mexanizmi
+			skipBtn.onclick = () => nextQuestion();
+
+			prevBtn.onclick = () => {
+				if (joriyIndex > 0) {
+					joriyIndex--;
+					renderQuestion();
+				}
+			};
+
+			function nextQuestion() {
+				if (joriyIndex < joriyAktivSavollar.length - 1) {
+					joriyIndex++;
+					renderQuestion();
+				} else {
+					showResults();
+				}
+			}
+
+			// Yakuniy tahlil oynasi
+			function showResults() {
+				progressBar.style.width = `100%`;
+				quizBox.classList.add("hidden");
+				resultBox.classList.remove("hidden");
+				sectionResultsContainer.innerHTML = "";
+
+				// Foydalanilgan tizimdagi unikal bo'limlarni aniqlash
+				const aktivBolimlar = [...new Set(joriyAktivSavollar.map((q) => q.bolim))];
+
+				aktivBolimlar.forEach((bolimNami) => {
+					const bolimSavollari = joriyAktivSavollar.filter((q) => q.bolim === bolimNami);
+					const bolimSavolIdlari = bolimSavollari.map((q) => q.id);
+					const bolimJavoblari = userAnswers.filter((ans) => bolimSavolIdlari.includes(ans.savolId));
+
+					const jami = bolimSavollari.length;
+					const togri = bolimJavoblari.filter((ans) => ans.status === "togri").length;
+					const foiz = Math.round((togri / jami) * 100);
+
+					// Rangli indikatorlar
+					let rangClass = "bg-rose-500",
+						matnRang = "text-rose-700",
+						fonRang = "bg-rose-50";
+					if (foiz >= 80) {
+						rangClass = "bg-emerald-500";
+						matnRang = "text-emerald-700";
+						fonRang = "bg-emerald-50";
+					} else if (foiz >= 50) {
+						rangClass = "bg-amber-500";
+						matnRang = "text-amber-700";
+						fonRang = "bg-amber-50";
+					}
+
+					const div = document.createElement("div");
+					div.className = `p-4 rounded-xl border border-slate-100 ${fonRang}`;
+					div.innerHTML = `
+          <div class="flex justify-between items-center mb-2">
+            <h4 class="font-bold text-slate-800 text-sm md:text-base">${bolimNami}</h4>
+            <span class="text-sm font-extrabold ${matnRang}">${foiz}%</span>
+          </div>
+          <div class="w-full bg-slate-200 rounded-full h-2.5 mb-1">
+            <div class="h-2.5 rounded-full ${rangClass}" style="width: ${foiz}%"></div>
+          </div>
+          <p class="text-xs text-slate-500 font-medium">Ko'rsatkich: ${togri} ta to'g'ri / ${jami} tadan</p>
+        `;
+					sectionResultsContainer.appendChild(div);
+				});
+			}
+
+			// Dashboard menyusiga qaytish
+			function backToMenu() {
+				resultBox.classList.add("hidden");
+				menuBox.classList.remove("hidden");
+				renderMenu();
+			}
+
+			// Mavjud rejimni boshidan yuklash
+			function restartCurrentQuiz() {
+				startQuiz(tanlanganRejim);
+			}
+		</script>
+	</body>
+</html>
